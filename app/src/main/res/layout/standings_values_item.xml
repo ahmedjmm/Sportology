@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="standing"
+            type="com.mobile.sportology.models.football.Standings.Response.League.Standing" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/team_rank"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@{standing.rank.toString()}"/>
+
+        <ImageView
+            android:id="@+id/team_logo_value"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            app:url="@{standing.team.logo}"/>
+
+        <TextView
+            android:id="@+id/team_value"
+            android:text="@{standing.team.name}"
+            android:gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/points_value"
+            android:text="@{Integer.toString(standing.points)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/against_for_value"
+            android:text="@{Integer.toString(standing.all.goals.against)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/goal_diff_value"
+            android:text="@{Integer.toString(standing.goalsDiff)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/played_value"
+            android:text="@{Integer.toString(standing.all.played)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/win_value"
+            android:text="@{Integer.toString(standing.all.win)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/draw_value"
+            android:text="@{Integer.toString(standing.all.draw)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/lose_value"
+            android:text="@{Integer.toString(standing.all.lose)}"
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:id="@+id/forms_layout"
+            android:gravity="center"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+
+    </LinearLayout>
+</layout>

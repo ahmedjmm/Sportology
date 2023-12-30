@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android style -->
+
+    <!-- Android Holo style -->
+    <color name="holo_green_light">#ff99cc00</color>
+
+    <!-- Windows 8 style -->
+
+    <!-- Common -->
+    <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#008000</color>
+    <color name="yellow">#FFFF00</color>
+    <!-- Generic -->
+    <!-- Generic Dark -->
+    <!-- Generic Light -->
+    <color name="LightSlateGray">#778899</color>
+    <color name="LightGreen">#90EE90</color>
+    <color name="light_red">#AEFF0000</color>
+    <!-- Generic Medium -->
+
+    <!-- a -->
+    <color name="AntiqueWhite">#FAEBD7</color>
+    <!-- b -->
+    <!-- c -->
+    <!-- d -->
+    <!-- e -->
+    <!-- f -->
+    <!-- g -->
+    <color name="gray">#808080</color>
+    <!-- h -->
+    <!-- i -->
+    <!-- j -->
+    <!-- k -->
+    <!-- l -->
+    <!-- m -->
+    <!-- n -->
+    <!-- o -->
+
+    <!-- p -->
+    <!-- q -->
+    <!-- r -->
+    <!-- s -->
+    <color name="SlateGray">#708090</color>
+    <color name="SlateBlue">#6A5ACD</color>
+
+    <!-- t -->
+    <!-- u -->
+    <!-- v -->
+    <color name="purple">#800080</color>
+    <!-- w -->
+    <color name="WhiteSmoke">#F5F5F5</color>
+    <!-- x -->
+    <!-- y -->
+
+    <!--  pressed  -->
+    <!--  selected  -->
+</resources>

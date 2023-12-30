@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:animateLayoutChanges="true">
+
+            <HorizontalScrollView
+                android:id="@+id/standings_view"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TableLayout
+                    android:id="@+id/table_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/row_divider"
+                    android:showDividers="middle">
+                    <TableRow>
+                        <Space
+                            android:id="@+id/team_rank"
+                            android:layout_width="30dp"
+                            android:layout_height="20dp"/>
+
+                        <Space
+                            android:id="@+id/teamLogo"
+                            android:layout_width="50dp"
+                            android:layout_height="20dp"/>
+
+                        <TextView
+                            android:id="@+id/team"
+                            android:text="@string/team"
+                            android:gravity="center"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/points"
+                            android:text="@string/points"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/against_for"
+                            android:text="@string/for_against"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/goal_diff"
+                            android:text="@string/goal_diff"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/played"
+                            android:text="@string/played"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/win"
+                            android:text="@string/win"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/draw"
+                            android:text="@string/draw"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/lose"
+                            android:text="@string/lose"
+                            android:gravity="center"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/form"
+                            android:text="@string/formation"
+                            android:gravity="center"
+                            android:layout_width="@dimen/form_layout_width"
+                            android:layout_height="wrap_content"/>
+                    </TableRow>
+                </TableLayout>
+            </HorizontalScrollView>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/loadingIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:indeterminate="true"
+                app:trackCornerRadius="20dp"/>
+
+            <include
+                android:id="@+id/errorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                layout="@layout/error_layout"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

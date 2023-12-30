@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name" translatable="false">Sportology</string>
+
+    <!-- MainActivity strings  -->
+    <string name="matches">Football</string>
+    <string name="settings">Settings</string>
+    <string name="news">News</string>
+
+    <!-- MatchDetailsActivity strings -->
+    <string name="unable_to_connect">Unable to connect to server</string>
+    <string name="stats"><![CDATA[Stats]]></string>
+    <string name="standing">Standings</string>
+    <string name="referee">Referee</string>
+    <string name="possession">Possession</string>
+    <string name="fouls">Fouls</string>
+    <string name="injuries">Injuries</string>
+    <string name="corners">Corner kicks</string>
+    <string name="offsides">Offsides</string>
+    <string name="total_shots">Total shots</string>
+    <string name="shots_on_goal">Shots on goal</string>
+    <string name="shots_off_goal">Shots off goal</string>
+    <string name="shots_blocked">Shots blocked</string>
+    <string name="yellow_cards">Yellow cards</string>
+    <string name="red_cards">Red cards</string>
+    <string name="yellow_red_cards">Yellow then red cards</string>
+    <string name="substitutions">Substitutions</string>
+    <string name="goal_kick">Goal kicks</string>
+    <string name="free_kick">Free kicks</string>
+    <string name="dangerous_attacks">Dangerous attacks</string>
+    <string name="attacks">Attacks</string>
+    <string name="ball_safe">Ball safe</string>
+    <string name="throw_in">Throw in</string>
+    <string name="away_lineups">Away lineups</string>
+    <string name="home_lineups">Home lineups</string>
+    <string name="venue">Venue</string>
+    <string name="goalkeeper_saves">Goalkeeper saves</string>
+    <string name="total_passes">Total passes</string>
+    <string name="passes_accurate">Passes accurate</string>
+    <string name="search_hint">Search team, player, league ...</string>
+    <string name="search">Search</string>
+    <string name="leagues">Leagues</string>
+    <string name="teams">Teams</string>
+    <string name="no_results">No results</string>
+    <string name="see_all">See all</string>
+    <string name="competitions">Competitions</string>
+    <string name="retry">Retry</string>
+    <string name="data_not_provided">Data not provided\n</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="post_notification_warning">Notification feature required to show match reminder</string>
+    <string name="notification_permission">Notification permission\n</string>
+    <string name="decline">Decline</string>
+    <string name="request_permission">Requet permission</string>
+    <string name="match_start_notification_body" translatable="false">Notifications feature required to show match start reminder</string>
+    <string name="sign_in_required">Sign in required</string>
+</resources>

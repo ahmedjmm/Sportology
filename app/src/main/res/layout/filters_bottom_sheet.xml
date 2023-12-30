@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/filters"
+            app:navigationIcon="@drawable/ic_close_24"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/toolbar_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/search_in"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_in"
+            android:layout_marginStart="8dp"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/search_in_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_chip"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/content"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/title_chip"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/description_chip"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/source"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sources"
+            android:layout_marginStart="8dp"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sources_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source1"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lequipe"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source2"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bleacher_report"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source3"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/espn"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source4"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/espn_cric_info"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source5"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fox_sports"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source6"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nfl_news"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source7"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nhl_news"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source8"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bbc_sport"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source9"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/four_four_two"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source10"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/talksport"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/source11"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/the_sport_bible"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/sort"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sortBy"
+            android:layout_marginStart="8dp"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sort_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/publishedAt"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/newest_to_oldest" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/relevancy"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/relevancy"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/popularity"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/popularity"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <androidx.legacy.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@color/white">
+
+            <Button
+                style="@style/Widget.Material3.Button.TextButton"
+                android:id="@+id/reset"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/reset" />
+
+            <Button
+                style="?attr/materialIconButtonFilledStyle"
+                android:id="@+id/apply"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/apply" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

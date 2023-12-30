@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/matchStatsFragment">
+    <fragment
+        android:id="@+id/matchAwayLineupsFragment"
+        android:name="com.mobile.sportology.views.fragments.matchDetailsFragments.MatchLineupsFragment"
+        android:label="MatchAwayLineupsFragment" >
+        <action
+            android:id="@+id/action_matchAwayLineupsFragment_to_matchStandingsFragment"
+            app:destination="@id/matchStandingsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_matchAwayLineupsFragment_to_matchStatsFragment"
+            app:destination="@id/matchStatsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_matchAwayLineupsFragment_self2"
+            app:destination="@id/matchAwayLineupsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <argument
+            android:name="teamLineups"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/matchStandingsFragment"
+        android:name="com.mobile.sportology.views.fragments.matchDetailsFragments.LeagueStandingsFragment"
+        android:label="MatchStandingsFragment" >
+        <action
+            android:id="@+id/action_matchStandingsFragment_to_matchAwayLineupsFragment"
+            app:destination="@id/matchAwayLineupsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_matchStandingsFragment_to_matchStatsFragment"
+            app:destination="@id/matchStatsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/matchStatsFragment"
+        android:name="com.mobile.sportology.views.fragments.matchDetailsFragments.MatchStatsFragment"
+        android:label="MatchStatsFragment" >
+        <action
+            android:id="@+id/action_matchStatsFragment_to_matchAwayLineupsFragment"
+            app:destination="@id/matchAwayLineupsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_matchStatsFragment_to_matchStandingsFragment"
+            app:destination="@id/matchStandingsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"/>
+    </fragment>
+</navigation>

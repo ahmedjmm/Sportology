@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/football">
+
+    <fragment
+        android:id="@+id/football"
+        android:name="com.mobile.sportology.views.fragments.bottomNav.FootBallFragment"
+        android:label="@string/matches"
+        tools:layout="@layout/fragment_football">
+        <action
+            android:id="@+id/action_football_to_matchDetailsActivity"
+            app:destination="@id/matchDetailsActivity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.mobile.sportology.views.fragments.bottomNav.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_settings">
+    </fragment>
+
+    <fragment
+        android:id="@+id/news"
+        android:name="com.mobile.sportology.views.fragments.bottomNav.NewsFragment"
+        android:label="@string/news"
+        tools:layout="@layout/fragment_news">
+    </fragment>
+
+    <activity
+        android:id="@+id/matchDetailsActivity"
+        android:name="com.mobile.sportology.views.activities.MatchDetailsActivity"
+        android:label="MatchDetailsActivity">
+        <argument
+            android:name="matchId"
+            app:argType="integer" />
+        <argument
+            android:name="season"
+            app:argType="integer" />
+        <argument
+            android:name="leagueId"
+            app:argType="integer" />
+    </activity>
+</navigation>

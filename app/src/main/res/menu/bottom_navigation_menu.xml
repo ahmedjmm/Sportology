@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/football"
+        android:icon="@drawable/ic_football"
+        android:title="@string/matches"/>
+    <item
+        android:id="@+id/news"
+        android:icon="@drawable/ic_news"
+        android:title="@string/news" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings" />
+</menu>

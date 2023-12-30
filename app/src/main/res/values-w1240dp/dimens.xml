@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin">200dp</dimen>
+    <dimen name="formation_image_width">30</dimen>
+    <dimen name="formation_image_height">30</dimen>
+</resources>

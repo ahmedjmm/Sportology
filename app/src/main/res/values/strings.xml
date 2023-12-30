@@ -1,0 +1,148 @@
+<resources>
+    <string name="app_name">Sportology</string>
+
+    <!-- MainActivity strings  -->
+    <string name="matches">Matches</string>
+    <string name="settings">Settings</string>
+    <string name="news">News</string>
+
+    <!-- MatchDetailsActivity strings -->
+    <string name="unable_to_connect">Unable to connect to server</string>
+    <string name="stats"><![CDATA[Stats]]></string>
+    <string name="lineups">Lineups</string>
+    <string name="away_lineups">Away</string>
+    <string name="home_lineups">Home</string>
+    <string name="standing">Standings</string>
+    <string name="referee">Referee</string>
+    <string name="venue">Venue</string>
+
+    <!-- MatchStatsFragment strings -->
+    <string name="possession">Possession</string>
+    <string name="fouls">Fouls</string>
+    <string name="injuries">Injuries</string>
+    <string name="corners">Corner kicks</string>
+    <string name="offsides">Offsides</string>
+    <string name="total_shots">Total shots</string>
+    <string name="shots_on_goal">Shots on goal</string>
+    <string name="shots_off_goal">Shots off goal</string>
+    <string name="shots_blocked">Shots blocked</string>
+    <string name="yellow_cards">Yellow cards</string>
+    <string name="red_cards">Red cards</string>
+    <string name="yellow_red_cards">Yellow then red cards</string>
+    <string name="goal_kick">Goal kicks</string>
+    <string name="free_kick">Free kicks</string>
+    <string name="dangerous_attacks">Dangerous attacks</string>
+    <string name="attacks">Attacks</string>
+    <string name="ball_safe">Ball safe</string>
+    <string name="throw_in">Throw in</string>
+    <string name="goalkeeper_saves">Goalkeeper saves</string>
+    <string name="total_passes">Total passes</string>
+    <string name="passes_accurate">Passes accurate</string>
+
+    <!-- MatchLineupsFragment (home and away) strings -->
+    <string name="missing_players">Missing players</string>
+    <string name="substitutions">Substitutions</string>
+
+    <!-- LeagueStandingsFragment (home and away) strings -->
+    <string name="played" translatable="false">P</string>
+    <string name="for_against" translatable="false">F/A</string>
+    <string name="goal_diff" translatable="false">+/-</string>
+    <string name="points" translatable="false">PTS</string>
+    <string name="win" translatable="false">W</string>
+    <string name="draw" translatable="false">D</string>
+    <string name="lose" translatable="false">L</string>
+    <string name="formation">Formation</string>
+    <string name="team">Team</string>
+
+    <!--  FootBallFragment strings  -->
+    <string name="live">Live</string>
+    <string name="pick_team">Pick your favourite team</string>
+    <string name="search_hint">Search team, player, league …</string>
+
+    <!--  SearchableActivity Strings  -->
+    <string name="leagues">Leagues</string>
+    <string name="teams">Teams</string>
+    <string name="see_all">See all</string>
+    <string name="search">Search</string>
+    <string name="competitions">Competitions</string>
+
+    <string name="title_activity_all_search_results" translatable="false">AllSearchResultsActivity</string>
+
+    <!--  response error strings  -->
+    <string name="no_results">No results</string>
+    <string name="unknown_error">Unknown error accured</string>
+    <string name="socket_timeout">Connection timeout</string>
+    <string name="limit_reached">You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.</string>
+
+    <string name="live_matches">all</string>
+    <string name="retry">Retry</string>
+    <string name="data_not_provided">Data not provided\n</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="post_notification_warning">Notification feature required to show match reminder</string>
+    <string name="notification_permission">Notification permission\n</string>
+    <string name="decline">Decline</string>
+    <string name="request_permission">Request permission</string>
+    <string name="match_start_notification_body">Notifications feature required to show match start reminder</string>
+
+
+    <!--  settings fragment  -->
+    <string name="account_and_sync" translatable="false">Account &amp; Sync</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="sign_out_successful">Signed out successfully</string>
+    <string name="time_zones">Time zones</string>
+    <string name="selected_time_zone" translatable="false">selected_time_zone</string>
+    <string name="select_time_zone_index" translatable="false">select_time_zone_index</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="time_format">Time format</string>
+    <string name="time_format_12" translatable="false">12 HS</string>
+    <string name="time_format_24" translatable="false">24 HS</string>
+    <string name="selected_time_format" translatable="false">selected_time_format</string>
+    <string name="sync_settings">Sync settings with cloud</string>
+    <string name="sign_in_required">Sign in required</string>
+    <string name="is_sync_options" translatable="false">is_sync_options</string>
+    <string name="searchbar_hint">"Search articles, news ..."</string>
+    <string name="Everything">Everything</string>
+    <string name="top_headlines">Top headlines</string>
+    <string name="filters">Filters</string>
+    <string name="author">"Author:"</string>
+    <string name="source">Source:</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="app_not_found">No browser found to open this uri</string>
+    <string name="news_language">News language and resource</string>
+    <string name="select_time_zone">Select time zone</string>
+    <string name="selected_news_language">selected_news_language</string>
+    <string name="selected_news_language_index">selected_news_language_index</string>
+    <string name="apply">Apply</string>
+    <string name="search_in">Search in</string>
+    <string name="content">Content</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="sources">Sources</string>
+
+
+    <string name="lequipe" translatable="false">lequipe</string>
+    <string name="bleacher_report" translatable="false">bleacher-report</string>
+    <string name="espn" translatable="false">espn</string>
+    <string name="espn_cric_info" translatable="false">espn-cric-info</string>
+    <string name="fox_sports" translatable="false">fox-sports</string>
+    <string name="nfl_news" translatable="false">nfl-news</string>
+    <string name="nhl_news" translatable="false">nhl-news</string>
+    <string name="bbc_sport" translatable="false">bbc-sport</string>
+    <string name="four_four_two" translatable="false">four-four-two</string>
+    <string name="talksport" translatable="false">talksport</string>
+    <string name="the_sport_bible" translatable="false">the-sport-bible</string>
+    <string name="popularity">Popularity</string>
+    <string name="relevancy">Relevancy</string>
+    <string name="newest_to_oldest">Newest to oldest</string>
+    <string name="publishedAt">publishedAt</string>
+    <string name="sortBy">Sort By</string>
+    <string name="reset">Reset</string>
+
+    <string name="MATCH_START_NOTIFICATION_TITLE_AND_CHANNEL">Match started</string>
+    <string name="MATCH_START_NOTIFICATION_CHANNEL_ID" translatable="false">MS</string>
+    <string name="MATCH_START_NOTIFICATION_CANCEL" translatable="false">NOTIFICATION_DISMISSED</string>
+    <string name="MATCH_START_NOTIFICATION_DESCRIPTION" translatable="false">This notification shows when match starts</string>
+    <string name="MATCH_START_NOTIFICATION_SHOW" translatable="false">MATCH_START_NOTIFICATION_SHOW</string>
+</resources>

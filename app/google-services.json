@@ -1,0 +1,43 @@
+{
+  "project_info": {
+    "project_number": "930046062186",
+    "project_id": "sportology-b9d9d",
+    "storage_bucket": "sportology-b9d9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930046062186:android:c9523cd4089a654a44e413",
+        "android_client_info": {
+          "package_name": "com.mobile.sportology"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "930046062186-pv3gqukrfvsauqlku2mo04gcu50472lo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.sportology",
+            "certificate_hash": "b65c6e50321b0a4eda60042b5a6101833b8ff29b"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcMCRnlcAh9veWMEZ7l1HCXwY0QNr4yhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930046062186-ooje6s0g02ovubspkouarsebtpfhgak6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
