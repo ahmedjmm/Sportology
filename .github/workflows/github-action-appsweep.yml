@@ -1,0 +1,34 @@
+name: AppSweep mobile application security testing
+on: [push]
+jobs:
+  upload-app-to-appsweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: 17
+
+      - name: Create Local Properties File
+        run: touch local.properties
+
+      - name: Add secret API Key
+        run: echo "apiKey=\""${{ secrets.FOOTBALL_API_KEY }}"\"" >> local.properties
+
+      - name: Add secret API Key
+        run: echo "apiKey=\""${{ secrets.AUTH_WEB_CLIENT_ID }}"\"" >> local.properties
+
+      - name: Add secret API Key
+        run: echo "apiKey=\""${{ secrets.NEWS_API_KEY }}"\"" >> local.properties
+
+      - name: Make gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Upload app to AppSweep with Gradle
+        env:
+          APPSWEEP_API_KEY: ${{ secrets.APPSWEEP_API_KEY }}
+        run: ./gradlew uploadToAppSweepRelease
