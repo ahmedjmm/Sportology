@@ -1,8 +1,6 @@
 name: Test Release
 
-on:
-  pull_request:
-    branches: [test_branch]
+on: [push]
 
 jobs:
   run_tests:
