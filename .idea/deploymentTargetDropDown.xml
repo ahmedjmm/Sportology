@@ -2,7 +2,13 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="LeagueDaoTest">
+      <entry key="TeamDaoTest">
+        <State />
+      </entry>
+      <entry key="TeamDaoTest (1)">
+        <State />
+      </entry>
+      <entry key="app">
         <State />
       </entry>
     </value>

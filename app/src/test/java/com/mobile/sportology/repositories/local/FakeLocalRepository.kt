@@ -24,6 +24,7 @@ class FakeLocalRepository: LocalRepository {
         var leagueRoom: LeagueRoom? = null
         leagues.forEach {
             if(it.id == id) leagueRoom = it
+            return@forEach
         }
         return leagueRoom
     }
@@ -61,6 +62,10 @@ class FakeLocalRepository: LocalRepository {
     }
 
     override suspend fun upsertMatchNotification(matchNotificationRoom: MatchNotificationRoom) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteMatchStartNotificationById(id: Int) {
         TODO("Not yet implemented")
     }
 }
