@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   run_tests:
-    name: Testing debug variant
+    name: Testing release variant
     runs-on: ubuntu-latest
 
     steps:
@@ -33,5 +33,5 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Execute Gradle command - testDebugUnitTest
-        run: ./gradlew testDebugUnitTest
+      - name: Execute Gradle command - testReleaseUnitTest
+        run: ./gradlew testReleaseUnitTest
