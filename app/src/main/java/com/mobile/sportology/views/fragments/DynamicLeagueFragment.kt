@@ -1,6 +1,8 @@
 package com.mobile.sportology.views.fragments
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -11,24 +13,23 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
 import com.mobile.sportology.Shared
-import com.mobile.sportology.Shared.isLiveMatches
 import com.mobile.sportology.models.football.Fixtures
 import com.mobile.sportology.models.football.MatchNotificationRoom
 import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
 import com.mobile.sportology.servicesAndUtilities.MatchStartNotificationUtility
 import com.mobile.sportology.viewModels.FootBallViewModel
-import com.mobile.sportology.views.activities.MainActivity
+import com.mobile.sportology.views.activities.HomeActivity
 import com.mobile.sportology.views.adapters.footballAdapters.LeagueRecyclerViewAdapter
-import com.mobile.sportology.views.adapters.footballAdapters.MatchRecyclerViewAdapter
+import com.mobile.sportology.views.viewsUtilities.ViewCrossFadeAnimation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.error_layout.view.errorText
 import kotlinx.android.synthetic.main.error_layout.view.retry_button
@@ -36,9 +37,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
-    MatchRecyclerViewAdapter.OnCheckedChangeListener {
+    LeagueRecyclerViewAdapter.OnCheckedChangeListener, ViewCrossFadeAnimation {
     private lateinit var footBallViewModel: FootBallViewModel
 
     private lateinit var leagueRV: RecyclerView
@@ -57,11 +59,11 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
     private var isItemChecked = false
     private lateinit var fixture: Fixtures.Response
 
+    override var shortAnimationDuration: Int = 0
+
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-                isGranted: Boolean ->
-            if (isGranted) {
-                this.isItemChecked
+            if (it) {
                 onCheckChange(
                     fixture = fixture,
                     isChecked = isItemChecked,
@@ -70,9 +72,27 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
             }
         }
 
+    override fun hideViewWithAnimation(view: View){
+        view.animate().alpha(0f).setDuration(shortAnimationDuration.toLong())
+            .setListener(object: AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    view.visibility = View.GONE
+                }
+            })
+    }
+
+    override fun showViewWithAnimation(view: View) {
+        view.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(shortAnimationDuration.toLong()).setListener(null)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        footBallViewModel = (activity as MainActivity).footBallViewModel
+        shortAnimationDuration = requireContext().resources.getInteger(android.R.integer.config_shortAnimTime)
+        footBallViewModel = (activity as HomeActivity).footBallViewModel
     }
 
     override fun onCreateView(
@@ -87,14 +107,49 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
         setupLeagueRecyclerView()
-        observeLeaguesLiveData()
         when(leagueOrder) {
-            0 -> observeLeagueLiveData(footBallViewModel.englandPremierLeagueDatesLiveData)
-            1 -> observeLeagueLiveData(footBallViewModel.laLigaDatesLiveData)
-            2 -> observeLeagueLiveData(footBallViewModel.ligue1DatesLiveData)
-            3 -> observeLeagueLiveData(footBallViewModel.serieADatesLiveData)
-            4 -> observeLeagueLiveData(footBallViewModel.bundesLigaDatesLiveData)
-            5 -> observeLeagueLiveData(footBallViewModel.egyptianPremierLeagueDatesLiveData)
+            0 -> footBallViewModel.englandPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> showMatchesUI(it.data)
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
+            1 -> footBallViewModel.laLigaMatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> { showMatchesUI(it.data) }
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
+            2 -> footBallViewModel.ligue1MatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> { showMatchesUI(it.data) }
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
+            3 -> footBallViewModel.serieAMatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> { showMatchesUI(it.data) }
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
+            4 -> footBallViewModel.bundesLigaMatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> { showMatchesUI(it.data) }
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
+            5 -> footBallViewModel.egyptianPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
+                when(it) {
+                    is ResponseState.Success -> { showMatchesUI(it.data) }
+                    is ResponseState.Loading -> { showLoadingUI() }
+                    is ResponseState.Error -> { showErrorUI(it.message!!) }
+                }
+            }
         }
     }
 
@@ -104,81 +159,59 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
         leagueRV = view.findViewById(R.id.league_RV)
     }
 
-    private fun observeLeagueLiveData(liveData: LiveData<ResponseState<MutableList<String>>>) {
-        liveData.observe(viewLifecycleOwner) { responseState ->
-            when(responseState) {
-                is ResponseState.Success -> { showMatchesUI(responseState.data) }
-                is ResponseState.Loading -> { showLoadingUI() }
-                is ResponseState.Error -> { showErrorUI(responseState.message!!) }
-            }
-        }
-    }
-
-    private fun showMatchesUI(data: MutableList<String>?) {
-        leagueRV.visibility = View.VISIBLE
-        errorLayout.visibility = View.GONE
+    private fun showMatchesUI(data: MutableList<Any>?) {
         leagueRecyclerViewAdapter.differ.submitList(data)
-        circularProgressIndicator.visibility = View.GONE
-    }
-
-    private fun observeLeaguesLiveData() {
-        footBallViewModel.leaguesLiveData.observe(viewLifecycleOwner) { responseState ->
-            when(responseState) {
-                is ResponseState.Success -> {
-                    if(Shared.isConnected) {
-                        val season = responseState.data?.response?.get(0)?.seasons?.get(0)?.year!!
-                        val isLiveMatches = checkLiveMatches()
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            fetchLeagueMatches(Shared.LEAGUES_IDS[leagueOrder], season, isLiveMatches)
-                        }
-                    }
-                }
-                is ResponseState.Loading -> { showLoadingUI() }
-                is ResponseState.Error -> {
-                    showErrorUI(responseState.message!!) }
-            }
-        }
-    }
-
-    private fun checkLiveMatches(): String? {
-        return if(isLiveMatches) resources.getString(R.string.live_matches)
-        else null
+        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(circularProgressIndicator)
+        showViewWithAnimation(leagueRV)
     }
 
     private fun showErrorUI(errorMessage: String) {
-        errorLayout.visibility = View.VISIBLE
-        errorLayout.errorText.text = errorMessage
-        errorLayout.retry_button.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                footBallViewModel.getLeague(Shared.LEAGUES_IDS[leagueOrder])
+        errorLayout.apply {
+            errorText.text = errorMessage
+            retry_button.setOnClickListener {
+                if(Shared.isConnected)
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val responseState = footBallViewModel.getLeague(Shared.LEAGUES_IDS[leagueOrder])
+                        if(responseState is ResponseState.Success) {
+                            if(Shared.isLiveMatches)
+                                footBallViewModel.getLeagueMatches(
+                                    leagueId = Shared.LEAGUES_IDS[leagueOrder],
+                                    liveMatches = "all",
+                                    season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
+                                )
+                            else
+                                footBallViewModel.getLeagueMatches(
+                                    leagueId = Shared.LEAGUES_IDS[leagueOrder],
+                                    liveMatches = null,
+                                    season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
+                                )
+                        }
+                    }
+                else (requireActivity() as HomeActivity).snackBar.show()
             }
+            showViewWithAnimation(this)
         }
-        circularProgressIndicator.visibility = View.GONE
-        leagueRV.visibility = View.GONE
+        hideViewWithAnimation(circularProgressIndicator)
+        hideViewWithAnimation(leagueRV)
     }
 
     private fun showLoadingUI() {
-        circularProgressIndicator.visibility = View.VISIBLE
-        errorLayout.visibility = View.GONE
-        leagueRV.visibility = View.GONE
-    }
-
-    private suspend fun fetchLeagueMatches(leagueId: Int, season: Int, isLiveMatches: String?) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            footBallViewModel.getLeagueMatches(leagueId, season, leagueOrder, isLiveMatches)
-        }.join()
+        showViewWithAnimation(circularProgressIndicator)
+        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(leagueRV)
     }
 
     private fun setupLeagueRecyclerView() {
-        leagueRecyclerViewAdapter = LeagueRecyclerViewAdapter(
-            footBallViewModel,
-            leagueOrder,
-            this
-        )
+        leagueRecyclerViewAdapter = LeagueRecyclerViewAdapter(this)
         leagueRV.apply {
             adapter = leagueRecyclerViewAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             itemAnimator = null
+            val divider = MaterialDividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+            divider.setDividerColorResource(requireContext(), R.color.WhiteSmoke)
+            divider.isLastItemDecorated = false
+            addItemDecoration(divider)
         }
     }
 

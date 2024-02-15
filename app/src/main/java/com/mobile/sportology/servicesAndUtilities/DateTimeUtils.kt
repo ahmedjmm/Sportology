@@ -17,7 +17,10 @@ object DateTimeUtils {
 
     fun formatDateTime(dateTime: String): String {
         val date = dateTime.substring(0, 10)
-        val time = dateTime.substring(11, 16)
+        val time = if(timeFormat == "12 HS")
+            convertTimeFormatTo12HS(dateTime)
+        else
+            convertTimeFormatTo24HS(dateTime)
         return "$date \n $time"
     }
 

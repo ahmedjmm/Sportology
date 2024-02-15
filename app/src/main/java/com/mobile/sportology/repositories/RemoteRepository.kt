@@ -2,7 +2,6 @@ package com.mobile.sportology.repositories
 
 import com.mobile.sportology.api.FootballApi
 import com.mobile.sportology.api.NewsApi
-import org.intellij.lang.annotations.Language
 import javax.inject.Inject
 
 class RemoteRepository @Inject constructor(
@@ -20,6 +19,9 @@ class RemoteRepository @Inject constructor(
 
     suspend fun getStandings(leagueId: Int, season:Int) =
         footballApi?.getStandings(leagueId = leagueId, season = season)
+
+    suspend fun getFixtureById(timeZone: String, fixtureId: Int) =
+        footballApi?.getFixtureById(timeZone = timeZone, fixtureId = fixtureId)
 
     suspend fun getTeamSearchResults(query: String) = footballApi?.getTeamSearchResult(query)
 

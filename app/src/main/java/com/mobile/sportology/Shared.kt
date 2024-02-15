@@ -10,7 +10,7 @@ object Shared {
     const val FOOTBALL_BASE_URL = "https://v3.football.api-sports.io"
     val SAVED_MATCHES_NOTIFICATIONS_IDS = mutableListOf<Int>()
     //39, 140, 61, 135, 78, 233 england, spain, france, italy, germany, egypt
-    val LEAGUES_IDS = immutableListOf(39)
+    val LEAGUES_IDS = immutableListOf(39, 140, 61, 135, 78, 233)
 //    val LEAGUES_IDS = mapOf(
 //        "england" to 39,
 //        "spain" to 140,

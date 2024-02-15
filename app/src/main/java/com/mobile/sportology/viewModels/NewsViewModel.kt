@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.MalformedURLException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 
@@ -26,6 +27,9 @@ class NewsViewModel @Inject constructor(
     private val _topHeadlinesMutableLiveData = MutableLiveData<ResponseState<News>>()
     val everyThingLiveData: LiveData<ResponseState<News>> = _everyThingMutableLiveData
     val topHeadlinesLiveData: LiveData<ResponseState<News>> = _topHeadlinesMutableLiveData
+    var language: String = ""
+    private val _newsLanguageMutableLiveData = MutableLiveData(language)
+    val newsLanguageLiveData: LiveData<String> = _newsLanguageMutableLiveData
 
     val content = "content"
     val title = "title"
@@ -60,7 +64,7 @@ class NewsViewModel @Inject constructor(
     val sort_by: String = "publishedAt"
     val _q: String = "football"
     var q: String = "football"
-    var language: String = ""
+
 
     suspend fun getEveryThingNews() = viewModelScope.launch(Dispatchers.IO) {
         _everyThingMutableLiveData.postValue(ResponseState.Loading())
@@ -102,7 +106,8 @@ class NewsViewModel @Inject constructor(
     ) {
         val errorMessage = when (exception) {
             is JsonSyntaxException -> application.getString(R.string.limit_reached)
-            is SocketTimeoutException -> exception.toString()
+            is SocketTimeoutException -> exception.message!!
+            is UnknownHostException -> exception.message!!
             is MalformedURLException -> application.getString(R.string.unknown_error)
             else -> application.getString(R.string.unknown_error)
         }

@@ -17,8 +17,8 @@ class MyViewModelProvider @Inject constructor(
     override fun <T : ViewModel> create(viewModelClass: Class<T>): T {
         if (viewModelClass.isAssignableFrom(FootBallViewModel::class.java))
             return FootBallViewModel(application, remoteRepository!!, defaultLocalRepository!!) as T
-        else if (viewModelClass.isAssignableFrom(MatchDetailsActivityViewModel::class.java))
-            return MatchDetailsActivityViewModel(application, remoteRepository!!) as T
+        else if (viewModelClass.isAssignableFrom(MatchDetailsViewModel::class.java))
+            return MatchDetailsViewModel(application, remoteRepository!!) as T
         else if (viewModelClass.isAssignableFrom(SearchActivityViewModel::class.java))
             return SearchActivityViewModel(application, remoteRepository!!) as T
         else if (viewModelClass.isAssignableFrom(NewsViewModel::class.java))
@@ -28,6 +28,8 @@ class MyViewModelProvider @Inject constructor(
                 remoteRepository = remoteRepository!!) as T
         else if (viewModelClass.isAssignableFrom(AllSearchActivityViewModel::class.java))
             return AllSearchActivityViewModel(localRepository = defaultLocalRepository!!) as T
+        else if (viewModelClass.isAssignableFrom(SettingsViewModel::class.java))
+            return SettingsViewModel() as T
         throw IllegalArgumentException("unknown view model")
     }
 }

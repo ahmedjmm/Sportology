@@ -23,7 +23,7 @@ class AllSearchActivityViewModelTest {
     @Test
     fun `insert team with empty field, return error`() {
         runBlocking {
-            allSearchActivityViewModel.upsertTeam(TeamRoom(1, "real", "logo"))
+            allSearchActivityViewModel.upsertTeam(TeamRoom(1, "", "logo"))
         }
     }
 }

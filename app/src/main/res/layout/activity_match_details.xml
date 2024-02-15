@@ -8,8 +8,6 @@
         <variable
             name="matchDetails"
             type="com.mobile.sportology.models.football.FixtureById" />
-
-
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
@@ -88,21 +86,86 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/weatherInfo"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbarImage"
+            style="?attr/materialCardViewFilledStyle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{matchDetails.response.get(0).fixture.referee}"
+                    android:drawablePadding="5dp"
+                    app:drawableLeftCompat="@drawable/football_whistle_of_referee" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@{matchDetails.response.get(0).fixture.venue.name + ',' + ' ' + matchDetails.response.get(0).fixture.venue.city}"
+                    android:drawablePadding="5dp"
+                    app:drawableLeftCompat="@drawable/stadium_icon" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintTop_toBottomOf="@id/weatherInfo"
+            app:singleSelection="true"
+            android:gravity="center"
+            app:checkedButton="@id/stats">
+
+            <Button
+                android:id="@+id/stats"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:text="@string/stats"/>
+
+            <Button
+                android:id="@+id/lineups"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:drawableEnd="@drawable/ic_drop_menu"
+                android:layout_height="wrap_content"
+                android:text="@string/lineups"/>
+
+            <Button
+                android:id="@+id/standing"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/standing"/>
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
         <include
             android:id="@+id/matchDetailsLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/toolbarImage"
+            app:layout_constraintTop_toBottomOf="@id/toggleButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:matchDetails="@{matchDetails}"
             layout="@layout/match_details_layout"/>
-
-        <include
-            android:id="@+id/errorLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/error_layout"/>
     </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

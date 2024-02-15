@@ -9,13 +9,16 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
+import com.mobile.sportology.Shared
 import com.mobile.sportology.models.football.LeagueSearchResult
 import com.mobile.sportology.models.football.TeamSearchResult
 import com.mobile.sportology.repositories.RemoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.net.MalformedURLException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,58 +32,64 @@ class SearchActivityViewModel @Inject constructor(
     val leagueSearchLiveData: LiveData<ResponseState<LeagueSearchResult>> = _leagueSearchMutableLiveData
 
     suspend fun searchTeam(query: String) = viewModelScope.launch(Dispatchers.IO) {
-        _teamSearchMutableLiveData.postValue(ResponseState.Loading())
-        try{
-            val response = remoteRepository.getTeamSearchResults(query)
-            if(response?.body()?.response?.isEmpty() == true)
-                _teamSearchMutableLiveData.postValue(ResponseState.Error(app.getString(
-                    R.string.no_results)))
-            else _teamSearchMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
+        if(Shared.isConnected) {
+            _teamSearchMutableLiveData.postValue(ResponseState.Loading())
+            try{
+                val response = remoteRepository.getTeamSearchResults(query)
+                if(response?.body()?.response?.isEmpty() == true)
+                    _teamSearchMutableLiveData.postValue(ResponseState.Error(app.getString(
+                        R.string.no_results)))
+                else _teamSearchMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
+            }
+            catch (exception: Exception) {
+                handleTeamSearchException(exception)
+            }
         }
-        catch (timeOutException: SocketTimeoutException) {
-            Log.e("searchTeam()", timeOutException.toString())
-            _teamSearchMutableLiveData.postValue(timeOutException.message?.let {
-                ResponseState.Error(
-                    it
-                )
-            })
-        }
-        catch (jsonSyntaxException: JsonSyntaxException) {
-            Log.e("searchTeam()", jsonSyntaxException.toString())
-            _teamSearchMutableLiveData.postValue(
-                ResponseState.Error(app.resources.getString(R.string.limit_reached)))
-        }
-        catch (exception: Exception) {
-            Log.e("searchTeam()", exception.toString())
-            _teamSearchMutableLiveData.postValue(ResponseState.Error(app.resources.getString(R.string.unknown_error)))
-        }
+        else _teamSearchMutableLiveData.postValue(ResponseState.Error(app.getString(R.string.unable_to_connect)))
     }
 
     suspend fun searchLeague(query: String) = viewModelScope.launch(Dispatchers.IO) {
-        _leagueSearchMutableLiveData.postValue(ResponseState.Loading())
-        try{
-            val response = remoteRepository.getLeagueSearchResults(query)
-            if(response?.body()?.response?.isEmpty() == true)
-                _leagueSearchMutableLiveData.postValue(ResponseState.Error(app.getString(
-                    R.string.no_results)))
-            else _leagueSearchMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
+        if(Shared.isConnected) {
+            _leagueSearchMutableLiveData.postValue(ResponseState.Loading())
+            try{
+                val response = remoteRepository.getLeagueSearchResults(query)
+                if(response?.body()?.response?.isEmpty() == true)
+                    _leagueSearchMutableLiveData.postValue(ResponseState.Error(app.getString(
+                        R.string.no_results)))
+                else _leagueSearchMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
+            }
+            catch (exception: Exception) {
+                handleLeagueSearchException(exception)
+            }
         }
-        catch (timeOutException: SocketTimeoutException) {
-            Log.e("searchLeague()", timeOutException.toString())
-            _leagueSearchMutableLiveData.postValue(timeOutException.message?.let {
-                ResponseState.Error(
-                    it
-                )
-            })
+        else _leagueSearchMutableLiveData.postValue(ResponseState.Error(app.resources.getString(R.string.unable_to_connect)))
+    }
+
+    private fun handleLeagueSearchException(
+        exception: Exception
+    ) {
+        val errorMessage = when (exception) {
+            is JsonSyntaxException -> app.getString(R.string.limit_reached)
+            is SocketTimeoutException -> exception.message!!
+            is UnknownHostException -> exception.message!!
+            is MalformedURLException -> app.getString(R.string.unknown_error)
+            else -> app.getString(R.string.unknown_error)
         }
-        catch (jsonSyntaxException: JsonSyntaxException) {
-            Log.e("searchLeague()", jsonSyntaxException.toString())
-            _leagueSearchMutableLiveData.postValue(
-                ResponseState.Error(app.resources.getString(R.string.limit_reached)))
+        Log.e("handleLeagueSearchException()", exception.toString())
+        _leagueSearchMutableLiveData.postValue(ResponseState.Error(errorMessage))
+    }
+
+    private fun handleTeamSearchException(
+        exception: Exception
+    ) {
+        val errorMessage = when (exception) {
+            is JsonSyntaxException -> app.getString(R.string.limit_reached)
+            is SocketTimeoutException -> exception.message!!
+            is UnknownHostException -> exception.message!!
+            is MalformedURLException -> app.getString(R.string.unknown_error)
+            else -> app.getString(R.string.unknown_error)
         }
-        catch (exception: Exception) {
-            Log.e("searchLeague()", exception.toString())
-            _leagueSearchMutableLiveData.postValue(ResponseState.Error(app.resources.getString(R.string.unknown_error)))
-        }
+        Log.e("handleTeamSearchException()", exception.toString())
+        _teamSearchMutableLiveData.postValue(ResponseState.Error(errorMessage))
     }
 }

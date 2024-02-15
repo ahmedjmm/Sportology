@@ -2,7 +2,6 @@ package com.mobile.sportology.views.fragments.bottomNav
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.core.view.get
 import androidx.core.view.indices
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -22,7 +22,7 @@ import com.google.android.material.search.SearchView
 import com.google.android.material.tabs.TabLayout
 import com.mobile.sportology.R
 import com.mobile.sportology.viewModels.NewsViewModel
-import com.mobile.sportology.views.activities.MainActivity
+import com.mobile.sportology.views.activities.HomeActivity
 import com.mobile.sportology.views.adapters.newsAdapters.NewsViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.filters_bottom_sheet.title_chip
@@ -49,10 +49,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        newsViewModel = (requireActivity() as MainActivity).newsViewModel
-        val selectedNewsLanguageIndex = sharedPreferences.getInt(
-            resources.getString(R.string.selected_news_language_index), 0)
-        newsViewModel.language = resources.getStringArray(R.array.language_value)[selectedNewsLanguageIndex]
+        newsViewModel = (requireActivity() as HomeActivity).newsViewModel
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity() )
+        val newsLanguage = sharedPreferences.getString("news_language", "en")
+        newsViewModel.language = newsLanguage!!
     }
 
     override fun onCreateView(
@@ -149,7 +150,6 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
             newsViewModel.searchIn = newsViewModel.search_in
             newsViewModel.sources = newsViewModel._sources
             newsViewModel.sortBy = newsViewModel.sort_by
-            Log.i("sortBy", newsViewModel.sortBy)
             bottomSheet.dismiss()
             implementFilterViews()
             bottomSheet.show()

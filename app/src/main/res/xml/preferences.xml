@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:title="@string/account_and_sync"
+        app:iconSpaceReserved="false">
+        <com.mobile.sportology.views.fragments.bottomNav.CustomPreference
+            app:key="google_account"
+            app:layout="@layout/custom_preference" />
+
+        <SwitchPreference
+            app:key="sync_settings"
+            app:title="@string/sync_settings"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:summary="@string/sync_settings_summery"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+        <ListPreference
+            app:key="time_zone"
+            app:title="@string/time_zones"
+            app:entries="@array/time_zones"
+            app:entryValues="@array/time_zones"
+            app:defaultValue="Asia/Dubai"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <DropDownPreference
+            app:key="time_format"
+            app:title="@string/time_format"
+            app:defaultValue="@string/time_format_12"
+            app:entryValues="@array/time_format"
+            app:entries="@array/time_format"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            app:key="news_language"
+            app:title="@string/news_language"
+            app:entries="@array/news_language_key"
+            app:entryValues="@array/news_language_value"
+            app:defaultValue="en"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+
+        <DropDownPreference
+            app:key="app_language"
+            app:title="@string/app_language"
+            app:entries="@array/app_language_key"
+            app:entryValues="@array/app_language_value"
+            app:defaultValue="en"
+            app:useSimpleSummaryProvider="true"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+</PreferenceScreen>

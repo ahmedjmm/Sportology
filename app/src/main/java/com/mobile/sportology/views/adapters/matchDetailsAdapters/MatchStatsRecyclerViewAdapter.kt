@@ -15,8 +15,8 @@ class MatchStatsRecyclerViewAdapter(
         RecyclerView.ViewHolder(_itemViewBinding.root) {
         fun bind(awayStatisticsData: FixtureById.Response.Statistic.StatisticData?,
                  homeStatisticsData: FixtureById.Response.Statistic.StatisticData?) {
-            _itemViewBinding.awayStatistic = awayStatisticsData
-            _itemViewBinding.homeStatistic = homeStatisticsData
+            _itemViewBinding.awayStatistic?.text = awayStatisticsData?.value
+            _itemViewBinding.homeStatistic?.text = homeStatisticsData?.value
             var awayPossession = 0
             awayStatisticsData?.value?.let {
                 awayPossession = it.removeSuffix("%").toIntOrNull() ?: 0
@@ -28,7 +28,6 @@ class MatchStatsRecyclerViewAdapter(
 
     inner class OtherStatsViewHolder(private val _itemViewBinding: OtherStatsLayoutBinding) :
         RecyclerView.ViewHolder(_itemViewBinding.root) {
-
         fun bind(
             position: Int,
             homeStats: List<FixtureById.Response.Statistic.StatisticData?>?,
@@ -37,8 +36,9 @@ class MatchStatsRecyclerViewAdapter(
             val homeStatistic = homeStats?.get(position)
             val awayStatistic = awayStats?.get(position)
 
-            _itemViewBinding.homeStatistic = homeStatistic
-            _itemViewBinding.awayStatistic = awayStatistic
+            _itemViewBinding.homeStatisticText.text = homeStatistic?.value
+            _itemViewBinding.awayStatisticText.text = awayStatistic?.value
+            _itemViewBinding.statisticsType.text = awayStatistic?.type
 
             val homeProgress = homeStatistic?.value?.removeSuffix("%")?.toIntOrNull() ?: 0
             val awayProgress = awayStatistic?.value?.removeSuffix("%")?.toIntOrNull() ?: 0
@@ -69,7 +69,6 @@ class MatchStatsRecyclerViewAdapter(
         }
     }
 
-
     private val POSSESSION_STATISTIC_VIEW_TYPE = 0
     private val OTHERS_STATS_VIEW_TYPE = 1
 
@@ -91,7 +90,6 @@ class MatchStatsRecyclerViewAdapter(
             is OtherStatsViewHolder -> holder.bind(position, homeStatisticsData, awayStatisticsData)
         }
     }
-
 
     override fun getItemViewType(position: Int): Int =
         if (position == 0) POSSESSION_STATISTIC_VIEW_TYPE

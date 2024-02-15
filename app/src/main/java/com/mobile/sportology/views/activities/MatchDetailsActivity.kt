@@ -2,9 +2,9 @@ package com.mobile.sportology.views.activities
 
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
@@ -17,12 +17,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.mobile.sportology.R
-import com.mobile.sportology.Shared
+import com.mobile.sportology.ResponseState
 import com.mobile.sportology.databinding.ActivityMatchDetailsBinding
 import com.mobile.sportology.repositories.RemoteRepository
 import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
 import com.mobile.sportology.servicesAndUtilities.NetworkConnectivityReceiver
-import com.mobile.sportology.viewModels.MatchDetailsActivityViewModel
+import com.mobile.sportology.viewModels.MatchDetailsViewModel
 import com.mobile.sportology.viewModels.MyViewModelProvider
 import com.mobile.sportology.views.fragments.matchDetailsFragments.LeagueStandingsFragmentDirections
 import com.mobile.sportology.views.fragments.matchDetailsFragments.MatchLineupsFragmentDirections
@@ -41,6 +41,8 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
     lateinit var networkConnectivityReceiver: NetworkConnectivityReceiver
     @Inject
     lateinit var remoteRepository: RemoteRepository
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivityMatchDetailsBinding
     private lateinit var snackBar: Snackbar
     private lateinit var navController: NavController
@@ -50,7 +52,7 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         ViewModelProvider(
             this, MyViewModelProvider(
                 application, remoteRepository = remoteRepository,
-                defaultLocalRepository = null))[MatchDetailsActivityViewModel::class.java]
+                defaultLocalRepository = null))[MatchDetailsViewModel::class.java]
     }
     private var menuId = R.id.home_lineups
 
@@ -58,7 +60,16 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
 
-        snackBar = Snackbar.make(binding.motionLayout,
+        intent?.let {
+            getFixtureById(it)
+            lifecycleScope.launch(Dispatchers.IO) { getStandings(it) }
+        }?: run {
+            getFixtureById(args)
+            lifecycleScope.launch(Dispatchers.IO) { getStandings(args) }
+        }
+
+        snackBar = Snackbar.make(
+            binding.motionLayout,
             this.resources.getString(R.string.unable_to_connect),
             Snackbar.LENGTH_INDEFINITE
         )
@@ -66,32 +77,15 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
             snackBar.dismiss()
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.teamLineups = R.id.home_lineups
-            if(Shared.isConnected) {
-                intent?.let {
-                    getFixtureById(it)
-                    viewModel.getStandings(
-                        season = it.getIntExtra("season", 2022),
-                        leagueId = it.getIntExtra("leagueId", 39)
-                    )
-                }?: run {
-                    getFixtureById(args)
-                    viewModel.getStandings(season = args!!.season, leagueId = args!!.leagueId)
-                }
-            }
-        }
-
         navController =
             binding.matchDetailsLayout.navHostFragment.getFragment<NavHostFragment>().navController
 
-        binding.matchDetailsLayout.stats.setOnClickListener {
-//            mainBinding.motionLayout.getTransition(id.matchDetailsTransition).isEnabled = true
+        binding.stats.setOnClickListener {
             if (navController.currentDestination?.displayName.equals(
-                    "com.mobile.sportology:id/matchAwayLineupsFragment")
+                    "com.mobile.sportology:id/matchLineupsFragment")
             ) {
                 action =
-                    MatchLineupsFragmentDirections.actionMatchAwayLineupsFragmentToMatchStatsFragment()
+                    MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStatsFragment()
                 startFragment(action)
             } else if (navController.currentDestination?.displayName.equals(
                     "com.mobile.sportology:id/matchStandingsFragment"
@@ -102,11 +96,10 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
                 startFragment(action)
             }
         }
-        binding.matchDetailsLayout.lineups.setOnClickListener {
-//            mainBinding.motionLayout.getTransition(id.matchDetailsTransition).isEnabled = true
-            showMenu(it, R.menu.lineups_menu)
+        binding.lineups.setOnClickListener {
+            showMenu(it)
         }
-        binding.matchDetailsLayout.standing.setOnClickListener {
+        binding.standing.setOnClickListener {
             if (navController.currentDestination?.displayName.equals(
                     "com.mobile.sportology:id/matchStatsFragment"
                 )
@@ -115,40 +108,35 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
                     MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchStandingsFragment()
                 startFragment(action)
             } else if (navController.currentDestination?.displayName.equals(
-                    "com.mobile.sportology:id/matchAwayLineupsFragment"
+                    "com.mobile.sportology:id/matchLineupsFragment"
                 )
             ) {
                 action =
-                    MatchLineupsFragmentDirections.actionMatchAwayLineupsFragmentToMatchStandingsFragment()
+                    MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStandingsFragment()
                 startFragment(action)
             }
         }
 
-        viewModel.fixtureByIdLiveData.observe(this) { fixtureById ->
-            binding.matchDetails = fixtureById.data
-            binding.dateTime.text = fixtureById.data?.response?.get(0)?.fixture?.date?.let {
-                    date -> DateTimeUtils.formatDateTime(date)
+        viewModel.fixtureByIdLiveData.observe(this) { responseState ->
+            when(responseState) {
+                is ResponseState.Success -> {
+                    binding.matchDetails = responseState.data
+                    binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
+                            date -> DateTimeUtils.formatDateTime(date)
+                    }
+                    binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
+                    binding.score.text = responseState.data?.response?.get(0)?.goals?.home.toString() + " - " +
+                            responseState.data?.response?.get(0)?.goals?.away.toString()
+                }
+                is ResponseState.Error -> {
+                    binding.matchDetails = responseState.data
+                    binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
+                            date -> DateTimeUtils.formatDateTime(date)
+                    }
+                    binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
+                }
+                is ResponseState.Loading -> {}
             }
-            binding.status.text = fixtureById.data?.response?.get(0)?.fixture?.status?.long
-            binding.score.text = fixtureById.data?.response?.get(0)?.goals?.home.toString() + " - " +
-                    fixtureById.data?.response?.get(0)?.goals?.away.toString()
-            binding.matchDetailsLayout.root.visibility = View.VISIBLE
-            binding.errorLayout.errorLayoutBody.visibility = View.GONE
-        }
-    }
-
-    fun getFixtureById(args: Any?) {
-        if(args is Intent) {
-            viewModel.getFixtureById(
-                timeZone = resources.getStringArray(R.array.time_zones)[0],
-                fixtureId = args.getIntExtra("matchId", 867946),
-            )
-        }
-        else if (args is MatchDetailsActivityArgs){
-            viewModel.getFixtureById(
-                timeZone = resources.getStringArray(R.array.time_zones)[0],
-                fixtureId = args.matchId,
-            )
         }
     }
 
@@ -164,21 +152,21 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
                     )
                 ) {
                     action =
-                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchAwayLineupsFragment(R.id.home_lineups)
+                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(R.id.home_lineups)
                     startFragment(action)
                 } else if (navController.currentDestination?.displayName.equals(
                         "com.mobile.sportology:id/matchStandingsFragment"
                     )
                 ) {
                     action =
-                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchAwayLineupsFragment(R.id.home_lineups)
+                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(R.id.home_lineups)
                     startFragment(action)
                 } else if(navController.currentDestination?.displayName.equals(
-                        "com.mobile.sportology:id/matchAwayLineupsFragment"
+                        "com.mobile.sportology:id/matchLineupsFragment"
                     )
                 ) {
                     action =
-                        MatchLineupsFragmentDirections.actionMatchAwayLineupsFragmentSelf2(R.id.home_lineups)
+                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.home_lineups)
                     startFragment(action)
                 }
             }
@@ -188,30 +176,30 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
                     )
                 ) {
                     action =
-                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchAwayLineupsFragment(R.id.away_lineups)
+                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(R.id.away_lineups)
                     startFragment(action)
                 } else if (navController.currentDestination?.displayName.equals(
                         "com.mobile.sportology:id/matchStandingsFragment"
                     )
                 ) {
                     action =
-                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchAwayLineupsFragment(R.id.away_lineups)
+                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(R.id.away_lineups)
                     startFragment(action)
                 } else if(navController.currentDestination?.displayName.equals(
-                        "com.mobile.sportology:id/matchAwayLineupsFragment"
+                        "com.mobile.sportology:id/matchLineupsFragment"
                     )
                 ) {
                     action =
-                        MatchLineupsFragmentDirections.actionMatchAwayLineupsFragmentSelf2(R.id.away_lineups)
+                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.away_lineups)
                     startFragment(action)
                 }
             }
         }
     }
 
-    private fun showMenu(v: View, @MenuRes menuRes: Int) {
+    private fun showMenu(v: View) {
         val popup = PopupMenu(v.context, v)
-        popup.menuInflater.inflate(menuRes, popup.menu)
+        popup.menuInflater.inflate(R.menu.lineups_menu, popup.menu)
         popup.menu.findItem(menuId).apply {
             this.isChecked = true
             prepareLineupsFragment(this.itemId)
@@ -240,5 +228,40 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
     override fun onNetworkStateChanged(isConnected: Boolean) {
         if(!isConnected) snackBar.show()
         else snackBar.dismiss()
+    }
+
+    suspend fun getStandings(args: Any?) {
+        args?.let {
+            if(it is Intent) {
+                viewModel.getStandings(
+                    season = it.getIntExtra("season", 2023),
+                    leagueId = it.getIntExtra("leagueId", 135),
+                )
+            }
+            else if (it is MatchDetailsActivityArgs) {
+                viewModel.getStandings(
+                    season = it.season,
+                    leagueId = it.leagueId
+                )
+            }
+            else {}
+        }
+    }
+
+    fun getFixtureById(args: Any?) {
+        args?.let {
+            if(it is Intent) {
+                viewModel.getFixtureById(
+                    timeZone = sharedPreferences.getString("time_zone", "Asia/Dubai")!!,
+                    fixtureId = it.getIntExtra("matchId", 867946),
+                )
+            }
+            else if (it is MatchDetailsActivityArgs) {
+                viewModel.getFixtureById(
+                    timeZone = sharedPreferences.getString("time_zone", "Asia/Dubai")!!,
+                    fixtureId = it.matchId,
+                )
+            }
+        }
     }
 }

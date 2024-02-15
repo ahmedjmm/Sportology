@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.gson.GsonBuilder
 import com.mobile.sportology.BuildConfig
@@ -58,12 +59,15 @@ object SingletonModule {
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
-        context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     @Provides
     @Singleton
-    fun provideLocalRepository(leagueDao: LeagueDao, teamDao: TeamDao, matchNotificationDao: MatchNotificationDao) =
-        DefaultLocalRepository(leagueDao, teamDao, matchNotificationDao)
+    fun provideLocalRepository(
+        leagueDao: LeagueDao,
+        teamDao: TeamDao,
+        matchNotificationDao: MatchNotificationDao
+    ) = DefaultLocalRepository(leagueDao, teamDao, matchNotificationDao)
 
     @Singleton
     @Provides
@@ -83,7 +87,7 @@ object SingletonModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "Leagues&TeamsDatabase"
+            "League&TeamsDatabase"
         ).build()
     }
 
@@ -162,13 +166,6 @@ object SingletonModule {
         @ApplicationContext
         context: Context
     ) = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-//    @Provides
-//    @Singleton
-//    fun provideNotificationManagerCompat(
-//        @ApplicationContext
-//        context: Context
-//    ) = NotificationManagerCompat.from(context)
 
     @Provides
     @Singleton

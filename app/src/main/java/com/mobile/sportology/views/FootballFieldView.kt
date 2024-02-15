@@ -9,6 +9,8 @@ import android.util.AttributeSet
 import android.view.View
 
 class FootballFieldView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+    private val arcRadius = 70f
+    private val sweepAngle = 90f
 
     private val fieldPaint = Paint().apply {
         color = Color.GREEN
@@ -82,55 +84,44 @@ class FootballFieldView(context: Context, attrs: AttributeSet) : View(context, a
             linePaint
         )
 
-        val arcRadius = 70f
         // Top-left corner
         drawArcAtIntersection(
             canvas,
-            arcRadius = arcRadius,
             startX = -arcRadius,
             startY = -arcRadius,
             startAngle = 0f,
-            sweepAngle = 90f
         )
 
         // Top-right corner
         drawArcAtIntersection(
             canvas,
-            arcRadius = arcRadius,
             startX = width - arcRadius,
             startY = -arcRadius,
-            startAngle = 90f,
-            sweepAngle = 90f
+            startAngle = 90f
         )
 
         // Bottom-left corner
         drawArcAtIntersection(
             canvas,
-            arcRadius = arcRadius,
             startX = -arcRadius,
             startY = height - arcRadius,
-            startAngle = 270f,
-            sweepAngle = 90f
+            startAngle = 270f
         )
 
         // Bottom-right corner
         drawArcAtIntersection(
             canvas,
-            arcRadius = arcRadius,
             startX = width - arcRadius,
             startY = height - arcRadius,
-            startAngle = 180f,
-            sweepAngle = 90f
+            startAngle = 180f
         )
     }
 
     private fun drawArcAtIntersection(
         canvas: Canvas?,
-        arcRadius: Float,
         startX: Float,
         startY: Float,
         startAngle: Float,
-        sweepAngle: Float
     ) {
         canvas?.drawArc(
             RectF(startX, startY, startX + 2 * arcRadius, startY + 2 * arcRadius),

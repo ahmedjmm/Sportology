@@ -6,7 +6,7 @@
     <data>
         <variable
             name="league"
-            type="com.mobile.sportology.models.football.Leagues.Response.League" />
+            type="com.mobile.sportology.models.football.League.Response.LeagueData" />
     </data>
 
     <LinearLayout

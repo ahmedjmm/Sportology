@@ -1,5 +1,7 @@
 package com.mobile.sportology.views.fragments.matchDetailsFragments
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -19,19 +21,24 @@ import com.mobile.sportology.ResponseState
 import com.mobile.sportology.databinding.FragmentLineupsBinding
 import com.mobile.sportology.models.football.FixtureById
 import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
-import com.mobile.sportology.viewModels.MatchDetailsActivityViewModel
+import com.mobile.sportology.viewModels.MatchDetailsViewModel
 import com.mobile.sportology.views.activities.MatchDetailsActivity
+import com.mobile.sportology.views.viewsUtilities.ViewCrossFadeAnimation
 import com.mobile.sportology.views.viewsUtilities.imageBinding
-import java.lang.reflect.InvocationTargetException
+import kotlinx.android.synthetic.main.error_layout.retry_button
 
-class MatchLineupsFragment: Fragment(R.layout.fragment_lineups) {
+class MatchLineupsFragment: Fragment(R.layout.fragment_lineups), ViewCrossFadeAnimation {
     private lateinit var fragmentBinding: FragmentLineupsBinding
-    private lateinit var matchDetailsViewModel: MatchDetailsActivityViewModel
+    private lateinit var matchDetailsViewModel: MatchDetailsViewModel
     lateinit var activity: MatchDetailsActivity
-    val args: MatchLineupsFragmentArgs? by navArgs()
+    private val args: MatchLineupsFragmentArgs? by navArgs()
+
+    override var shortAnimationDuration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        shortAnimationDuration =
+            requireContext().resources.getInteger(android.R.integer.config_shortAnimTime)
         activity = requireActivity() as MatchDetailsActivity
         matchDetailsViewModel = activity.viewModel
         //to avoid returning back to previous fragment
@@ -55,10 +62,6 @@ class MatchLineupsFragment: Fragment(R.layout.fragment_lineups) {
             matchDetailsViewModel.teamLineups = it.teamLineups
             Log.i("lineupID", matchDetailsViewModel.teamLineups.toString())
         }
-        setupObservers()
-    }
-
-    private fun setupObservers() {
         matchDetailsViewModel.fixtureByIdLiveData.observe(viewLifecycleOwner) { responseState ->
             when (responseState) {
                 is ResponseState.Success -> { handleSuccess(responseState.data!!) }
@@ -68,8 +71,26 @@ class MatchLineupsFragment: Fragment(R.layout.fragment_lineups) {
         }
     }
 
+    override fun hideViewWithAnimation(view: View){
+        view.animate().alpha(0f).setDuration(shortAnimationDuration.toLong())
+            .setListener(object: AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    view.visibility = View.GONE
+                }
+            })
+    }
+
+    override fun showViewWithAnimation(view: View) {
+        view.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(shortAnimationDuration.toLong()).setListener(null)
+        }
+    }
+
     private fun handleSuccess(data: FixtureById) {
-        fragmentBinding.loadingIndicator.visibility = View.GONE
+        hideViewWithAnimation(fragmentBinding.loadingIndicator)
+        hideViewWithAnimation(fragmentBinding.errorLayout.root)
         if (DateTimeUtils.getTimeInMilliSeconds(data.response?.get(0)?.fixture?.date!!) > System.currentTimeMillis())
             showError(getString(R.string.data_not_provided))
         else {
@@ -78,35 +99,42 @@ class MatchLineupsFragment: Fragment(R.layout.fragment_lineups) {
             else data.response[0]?.lineups?.get(1)
 
             awayLineup?.let {
-                fragmentBinding.lineups = it
+                fragmentBinding.coachName.text = it.coach?.name
+                fragmentBinding.coachImage.imageBinding(it.coach?.photo)
+                fragmentBinding.formation.text = it.formation
                 buildLineupsViews(it)
                 buildSubstitutesView(it.substitutes)
             }
-            fragmentBinding.lineupsLayout.visibility = View.VISIBLE
-            fragmentBinding.coachAndFormation.visibility = View.VISIBLE
-            fragmentBinding.substitutionsView.visibility = View.VISIBLE
-            fragmentBinding.errorLayout.root.visibility = View.GONE
+            showViewWithAnimation(fragmentBinding.coachAndFormation)
+            showViewWithAnimation(fragmentBinding.lineupsLayout)
+            showViewWithAnimation(fragmentBinding.substitutionsView)
         }
     }
 
     private fun showLoading() {
-        fragmentBinding.fragmentViews.visibility = View.GONE
-        fragmentBinding.loadingIndicator.visibility = View.VISIBLE
-        fragmentBinding.errorLayout.root.visibility = View.GONE
-        fragmentBinding.lineupsLayout.visibility = View.GONE
+        hideViewWithAnimation(fragmentBinding.fragmentViews)
+        hideViewWithAnimation(fragmentBinding.fragmentViews)
+        hideViewWithAnimation(fragmentBinding.errorLayout.root)
+        hideViewWithAnimation(fragmentBinding.lineupsLayout)
+        showViewWithAnimation(fragmentBinding.loadingIndicator)
     }
 
     private fun showError(errorMessage: String) {
-        fragmentBinding.errorLayout.errorText.text = errorMessage
-        fragmentBinding.errorLayout.root.visibility = View.VISIBLE
-        fragmentBinding.fragmentViews.visibility = View.GONE
-        fragmentBinding.loadingIndicator.visibility = View.GONE
-        fragmentBinding.lineupsLayout.visibility = View.GONE
-        fragmentBinding.coachAndFormation.visibility = View.GONE
-        fragmentBinding.substitutionsView.visibility = View.GONE
-        fragmentBinding.errorLayout.retryButton.setOnClickListener {
-            try { activity.getFixtureById(activity.args) }
-            catch (_: InvocationTargetException) {}
+        hideViewWithAnimation(fragmentBinding.fragmentViews)
+        hideViewWithAnimation(fragmentBinding.loadingIndicator)
+        hideViewWithAnimation(fragmentBinding.lineupsLayout)
+        hideViewWithAnimation(fragmentBinding.coachAndFormation)
+        hideViewWithAnimation(fragmentBinding.substitutionsView)
+        fragmentBinding.errorLayout.apply {
+            errorText.text = errorMessage
+            retry_button.setOnClickListener {
+                activity.intent?.let {
+                    activity.getFixtureById(it)
+                }?: run {
+                    activity.getFixtureById(activity.args)
+                }
+            }
+            showViewWithAnimation(this.root)
         }
     }
 
@@ -230,7 +258,4 @@ class MatchLineupsFragment: Fragment(R.layout.fragment_lineups) {
         lineLayout.addView(playerLayout)
         fragmentBinding.lineupsLayout.addView(lineLayout)
     }
-
-
 }
-

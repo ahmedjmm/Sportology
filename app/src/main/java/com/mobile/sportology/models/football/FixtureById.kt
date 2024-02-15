@@ -108,7 +108,7 @@ data class FixtureById(
             @SerializedName("periods")
             val periods: Periods?,
             @SerializedName("referee")
-            val referee: String?,
+            var referee: String?,
             @SerializedName("status")
             val status: Status?,
             @SerializedName("timestamp")
@@ -136,19 +136,19 @@ data class FixtureById(
 
             data class Venue(
                 @SerializedName("city")
-                val city: String?,
+                var city: String?,
                 @SerializedName("id")
                 val id: Int?,
                 @SerializedName("name")
-                val name: String?
+                var name: String?
             )
         }
 
         data class Goals(
             @SerializedName("away")
-            val away: Int?,
+            var away: Int?,
             @SerializedName("home")
-            val home: Int?
+            var home: Int?
         )
 
         data class League(

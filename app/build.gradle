@@ -14,7 +14,6 @@ plugins {
 android {
     namespace 'com.mobile.sportology'
     compileSdk 34
-
     defaultConfig {
         applicationId "com.mobile.sportology"
         minSdk 27
@@ -30,7 +29,6 @@ android {
         buildConfigField "String", "NEWS_API_KEY", "\"${properties.getProperty("NEWS_API_KEY")}\""
         buildConfigField "String", "AUTH_WEB_CLIENT_ID", "\"${properties.getProperty("AUTH_WEB_CLIENT_ID")}\""
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -49,6 +47,7 @@ android {
     }
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 }
 
@@ -58,7 +57,7 @@ dependencies {
     // Google Play services library
     implementation 'com.google.android.gms:play-services-base:18.2.0'
     implementation("com.google.android.gms:play-services-auth:20.6.0")
-    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     def nav_version = "2.5.3"
     def room_version = "2.5.1"
 

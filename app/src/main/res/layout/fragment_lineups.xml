@@ -1,119 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nestedScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <data>
-        <variable
-            name="lineups"
-            type="com.mobile.sportology.models.football.FixtureById.Response.Lineup" />
-    </data>
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScroll"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/fragment_views"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/fragment_views"
+                android:id="@+id/coach_and_formation"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/coach_and_formation"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="5dp">
-                    <ImageView
-                        android:id="@+id/coach_image"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:padding="5dp"
-                        app:url="@{lineups.coach.photo}"/>
-                    <TextView
-                        android:id="@+id/coach_name"
-                        android:text="@{lineups.coach.name}"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="5"
-                        android:gravity="center_vertical"/>
-                    <TextView
-                        android:id="@+id/formation"
-                        android:text="@{lineups.formation}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"/>
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp">
-
-                    <com.mobile.sportology.views.FootballFieldView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center">
-                    </com.mobile.sportology.views.FootballFieldView>
-
-                    <LinearLayout
-                        android:id="@+id/lineups_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-                    </LinearLayout>
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:background="@color/SlateBlue"/>
-
-                <LinearLayout
-                    android:id="@+id/substitutions_view"
-                    android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp">
+                <ImageView
+                    android:id="@+id/coach_image"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:text="@string/substitutions"/>
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/SlateBlue"/>
+                    android:layout_weight="1"
+                    android:padding="5dp"/>
+                <TextView
+                    android:id="@+id/coach_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/formation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"/>
             </LinearLayout>
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/loadingIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:indeterminate="true"
-                app:trackCornerRadius="20dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="500dp">
 
-            <include
-                android:id="@+id/errorLayout"
+                <com.mobile.sportology.views.FootballFieldView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+                </com.mobile.sportology.views.FootballFieldView>
+
+                <LinearLayout
+                    android:id="@+id/lineups_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    tools:viewBindingIgnore="true">
+                </LinearLayout>
+            </RelativeLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/SlateBlue"/>
+
+            <LinearLayout
+                android:id="@+id/substitutions_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                layout="@layout/error_layout"/>
+                android:orientation="vertical"
+                tools:viewBindingIgnore="true">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:textStyle="bold"
+                    android:autoSizeTextType="uniform"
+                    android:text="@string/substitutions"/>
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/SlateBlue"/>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</layout>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            app:trackCornerRadius="20dp" />
+
+        <include
+            android:id="@+id/error_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            tools:viewBindingIgnore="true"
+            layout="@layout/error_layout"/>
+    </RelativeLayout>
+</ScrollView>

@@ -1,4 +1,4 @@
-name: AppSweep mobile application security testing
+name: AppSweep application security testing
 on: [push]
 jobs:
   upload-app-to-appsweep:

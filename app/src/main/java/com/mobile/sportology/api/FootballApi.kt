@@ -2,7 +2,6 @@ package com.mobile.sportology.api
 
 import com.mobile.sportology.Shared
 import com.mobile.sportology.models.football.*
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -36,17 +35,15 @@ interface FootballApi {
         leagueId: Int = Shared.LEAGUES_IDS[0],
         @Query("current")
         current: String = "true"
-    ): Response<Leagues>
+    ): Response<League>
 
     @GET("/fixtures")
     suspend fun getFixtureById(
         @Query("timezone")
         timeZone: String = Shared.TIME_ZONE[0],
-        @Query("season")
-        season: Int = 2022,
         @Query("id")
-        fixtureId: Int = 867946
-    ): Call<FixtureById>
+        fixtureId: Int
+    ): Response<FixtureById>
 
     @GET("/standings")
     suspend fun getStandings(

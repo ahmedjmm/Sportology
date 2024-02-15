@@ -6,8 +6,10 @@ import android.content.IntentFilter
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.provider.SearchRecentSuggestions
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,26 +17,30 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
 import com.mobile.sportology.Shared
-import com.mobile.sportology.databinding.ActivitySearchableBinding
 import com.mobile.sportology.models.football.LeagueRoom
 import com.mobile.sportology.models.football.LeagueSearchResult
 import com.mobile.sportology.models.football.TeamRoom
 import com.mobile.sportology.models.football.TeamSearchResult
 import com.mobile.sportology.repositories.DefaultLocalRepository
 import com.mobile.sportology.repositories.RemoteRepository
+import com.mobile.sportology.servicesAndUtilities.MySuggestionProvider
 import com.mobile.sportology.servicesAndUtilities.NetworkConnectivityReceiver
 import com.mobile.sportology.viewModels.MyViewModelProvider
 import com.mobile.sportology.viewModels.SearchActivityViewModel
 import com.mobile.sportology.views.viewsUtilities.imageBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.error_layout.view.errorText
 import kotlinx.android.synthetic.main.error_layout.view.retry_button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +49,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.NetworkStateListener {
+class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.NetworkStateListener{
     @Inject
     lateinit var intentFilter: IntentFilter
     @Inject
@@ -52,11 +58,22 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
     lateinit var networkConnectivityReceiver: NetworkConnectivityReceiver
     @Inject
     lateinit var defaultLocalRepository: DefaultLocalRepository
-    private lateinit var leagueRoomList: List<LeagueRoom>
-    private lateinit var teamRoomList: List<TeamRoom>
-    var myQuery = ""
+    private val leagueRoomList = mutableListOf<LeagueRoom>()
+    private val teamRoomList = mutableListOf<TeamRoom>()
+    private var myQuery = ""
+
+    private lateinit var constraintLayout: ConstraintLayout
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var snackBar: Snackbar
-    lateinit var binding: ActivitySearchableBinding
+    private lateinit var leaguesError: View
+    private lateinit var teamsError: View
+    private lateinit var leaguesProgressCircular: CircularProgressIndicator
+    private lateinit var teamsProgressCircular: CircularProgressIndicator
+    private lateinit var leaguesLayout: RelativeLayout
+    private lateinit var teamsLayout: RelativeLayout
+    private lateinit var leaguesTitle: TextView
+    private lateinit var teamsTitle: TextView
+
     private val viewModel by lazy {
         ViewModelProvider(
             this, MyViewModelProvider(application, remoteRepository = remoteRepository,
@@ -64,55 +81,57 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_searchable)
-
-        snackBar = Snackbar.make(binding.constraintLayout,
-            this.resources.getString(R.string.unable_to_connect),
-            Snackbar.LENGTH_INDEFINITE
-        )
-        snackBar.setAction(this.resources.getString(R.string.dismiss)) {
-            snackBar.dismiss()
-        }
+        setContentView(R.layout.activity_searchable)
+        initializeViews()
 
         if (Intent.ACTION_SEARCH == intent.action) {
-            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                myQuery = query.trim()
-                binding.toolbar.title = "${this.resources.getString(R.string.search)} $myQuery"
-                lifecycleScope.launch(Dispatchers.IO) {
-                    doMySearch(myQuery)
+            intent.apply {
+                getStringExtra(SearchManager.QUERY)?.also { query ->
+                    SearchRecentSuggestions(
+                        this@SearchableActivity,
+                        MySuggestionProvider.AUTHORITY,
+                        MySuggestionProvider.MODE
+                    ).saveRecentQuery(query, null)
+                    myQuery = query.trim()
+                    toolbar.title = "${getString(R.string.search)} $myQuery"
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        doMySearch(myQuery)
+                    }
                 }
             }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            leagueRoomList = defaultLocalRepository.getLeagues()
-            teamRoomList = defaultLocalRepository.getTeams()
+            leagueRoomList.addAll(defaultLocalRepository.getLeagues())
+            teamRoomList.addAll(defaultLocalRepository.getTeams())
         }
 
         viewModel.leagueSearchLiveData.observe(this) { responseState ->
             when(responseState) {
                 is ResponseState.Loading -> {
-                    binding.leaguesProgressCircular.visibility = View.VISIBLE
-                    binding.leaguesError.root.visibility = View.GONE
+                    hideView(leaguesError)
+                    showView(leaguesProgressCircular)
                 }
                 is ResponseState.Success -> {
                     responseState.data?.response?.let {
                         buildLeaguesViews(it)
                     }
-                    binding.leaguesLayout.visibility = View.VISIBLE
-                    binding.leaguesProgressCircular.visibility = View.GONE
-                    binding.leaguesError.root.visibility = View.GONE
+                    hideView(leaguesProgressCircular)
+                    hideView(leaguesError)
+                    showView(leaguesLayout)
                 }
                 is ResponseState.Error -> {
-                    binding.leaguesProgressCircular.visibility = View.GONE
-                    binding.leaguesLayout.visibility = View.VISIBLE
-                    binding.leaguesError.root.visibility = View.VISIBLE
-                    binding.leaguesError.root.retry_button.setOnClickListener {
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            viewModel.searchLeague(myQuery)
+                    hideView(leaguesProgressCircular)
+                    showView(leaguesLayout)
+                    leaguesError.apply {
+                        showView(this)
+                        retry_button.setOnClickListener {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                viewModel.searchLeague(myQuery)
+                            }
                         }
+                        errorText.text = responseState.message
                     }
-                    binding.leaguesError.errorText.text = responseState.message
                 }
             }
         }
@@ -120,30 +139,78 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
         viewModel.teamSearchLiveData.observe(this) { responseState ->
             when(responseState) {
                 is ResponseState.Loading -> {
-                    binding.teamsProgressCircular.visibility = View.VISIBLE
-                    binding.teamsError.root.visibility = View.GONE
+                    hideView(teamsError)
+                    showView(teamsProgressCircular)
                 }
                 is ResponseState.Success -> {
                     responseState.data?.response?.let {
                         buildTeamsViews(it)
                     }
-                    binding.teamsLayout.visibility = View.VISIBLE
-                    binding.teamsProgressCircular.visibility = View.GONE
-                    binding.teamsError.root.visibility = View.GONE
+                    hideView(teamsProgressCircular)
+                    hideView(teamsError)
+                    showView(teamsLayout)
                 }
                 is ResponseState.Error -> {
-                    binding.teamsProgressCircular.visibility = View.GONE
-                    binding.teamsLayout.visibility = View.VISIBLE
-                    binding.teamsError.root.visibility = View.VISIBLE
-                    binding.teamsError.root.retry_button.setOnClickListener {
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            viewModel.searchTeam(myQuery)
+                    hideView(teamsProgressCircular)
+                    showView(teamsLayout)
+                    teamsError.apply {
+                        showView(this)
+                        retry_button.setOnClickListener {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                viewModel.searchTeam(myQuery)
+                            }
                         }
+                        errorText.text = responseState.message
                     }
-                    binding.teamsError.errorText.text = responseState.message
                 }
             }
         }
+    }
+
+    private fun hideView(view: View){
+        view.visibility = View.GONE
+    }
+
+    private fun showView(view: View){
+        view.visibility = View.VISIBLE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        networkConnectivityReceiver.setListener(this)
+        registerReceiver(networkConnectivityReceiver, intentFilter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        networkConnectivityReceiver.setListener(null)
+        unregisterReceiver(networkConnectivityReceiver)
+    }
+
+    override fun onNetworkStateChanged(isConnected: Boolean) {
+        if(!isConnected) snackBar.show()
+        else snackBar.dismiss()
+    }
+
+    private fun initializeViews() {
+        constraintLayout = findViewById(R.id.constraint_layout)
+        snackBar = Snackbar.make(
+            constraintLayout,
+            this.resources.getString(R.string.unable_to_connect),
+            Snackbar.LENGTH_INDEFINITE
+        )
+        snackBar.setAction(this.resources.getString(R.string.dismiss)) {
+            snackBar.dismiss()
+        }
+        toolbar = findViewById(R.id.toolbar)
+        leaguesError = findViewById(R.id.leagues_error)
+        teamsError = findViewById(R.id.teams_error)
+        leaguesProgressCircular = findViewById(R.id.leagues_progress_circular)
+        teamsProgressCircular = findViewById(R.id.teams_progress_circular)
+        leaguesLayout = findViewById(R.id.leagues_layout)
+        teamsLayout = findViewById(R.id.teams_layout)
+        leaguesTitle = findViewById(R.id.leagues_title)
+        teamsTitle = findViewById(R.id.teams_title)
     }
 
     private fun buildLeaguesViews(leagues: List<LeagueSearchResult.Response?>) {
@@ -154,7 +221,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     RelativeLayout.LayoutParams.WRAP_CONTENT
                 )
                 val params = layoutParams as? RelativeLayout.LayoutParams
-                params?.addRule(RelativeLayout.BELOW, binding.leaguesTitle.id)
+                params?.addRule(RelativeLayout.BELOW, leaguesTitle.id)
                 orientation = LinearLayout.VERTICAL
             }
 
@@ -168,7 +235,6 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     params.setMargins(0, 5.dpToPx(), 0, 0)
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
-                    setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 }
 
                 val logo = ImageView(this).apply {
@@ -214,8 +280,8 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    val drawable: Drawable =
-                        context.resources.getDrawable(R.drawable.follow_button_selector)
+                    val drawable: Drawable? =
+                        ContextCompat.getDrawable(context, R.drawable.follow_button_selector)
                     buttonDrawable = drawable
                     isChecked = isItemChecked(leagues[index]?.league!!)
                     setOnCheckedChangeListener { _, isChecked ->
@@ -256,7 +322,6 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                 )
                 val params = this.layoutParams as LinearLayout.LayoutParams
                 params.setMargins(0, 5.dpToPx(), 0, 0)
-                setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 setOnClickListener {
                     if(Shared.isConnected){
                         val intent = Intent(this@SearchableActivity, AllSearchResultsActivity::class.java)
@@ -273,37 +338,47 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                 }
             }
             leagueSearchItems.addView(seeAllTextView)
-            binding.leaguesLayout.addView(leagueSearchItems)
+            leaguesLayout.addView(leagueSearchItems)
         }
         else {
-            val leagueSearchItems = LinearLayout(this).apply {
+            val allLeaguesLayout = LinearLayout(this).apply {
                 layoutParams = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
                 )
                 val params = layoutParams as? RelativeLayout.LayoutParams
-                params?.addRule(RelativeLayout.BELOW, binding.leaguesTitle.id)
+                params?.addRule(RelativeLayout.BELOW, leaguesTitle.id)
                 orientation = LinearLayout.VERTICAL
             }
+            leaguesLayout.addView(allLeaguesLayout)
 
             for(index in leagues.indices) {
-                val itemLayout = LinearLayout(this).apply {
+                val leagueSearchCard = MaterialCardView(
+                    this,
+                    null,
+                    com.google.android.material.R.attr.materialCardViewElevatedStyle
+                ).apply {
+                    layoutParams =
+                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    radius = 0f
+                    cardElevation = 10f
+                }
+
+                val cardInnerViews = LinearLayout(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         60.dpToPx()
                     )
-                    val params = this.layoutParams as LinearLayout.LayoutParams
-                    params.setMargins(0, 5.dpToPx(), 0, 0)
+                    setPadding(8, 0, 8, 0)
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
-                    setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 }
 
                 val logo = ImageView(this).apply {
                     layoutParams = LinearLayout.LayoutParams(25.dpToPx(), 25.dpToPx())
                     imageBinding(leagues[index]?.league?.logo)
                 }
-                itemLayout.addView(logo)
+                cardInnerViews.addView(logo)
 
                 val nameAndCountryLayout = LinearLayout(this).apply {
                     layoutParams = LinearLayout.LayoutParams(0,
@@ -333,15 +408,15 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                 }
                 nameAndCountryLayout.addView(nameTextView)
                 nameAndCountryLayout.addView(countryTextView)
-                itemLayout.addView(nameAndCountryLayout)
+                cardInnerViews.addView(nameAndCountryLayout)
 
                 val followCheckBox = CheckBox(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    val button: Drawable =
-                        context.resources.getDrawable(R.drawable.follow_button_selector)
+                    val button: Drawable? =
+                        ContextCompat.getDrawable(context, R.drawable.follow_button_selector)
                     buttonDrawable = button
                     isChecked = isItemChecked(leagues[index]?.league!!)
                     setOnCheckedChangeListener { _, isChecked ->
@@ -369,10 +444,10 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                         }
                     }
                 }
-                itemLayout.addView(followCheckBox)
-                leagueSearchItems.addView(itemLayout)
+                cardInnerViews.addView(followCheckBox)
+                leagueSearchCard.addView(cardInnerViews)
+                allLeaguesLayout.addView(leagueSearchCard)
             }
-            binding.leaguesLayout.addView(leagueSearchItems)
         }
     }
 
@@ -402,7 +477,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     RelativeLayout.LayoutParams.WRAP_CONTENT
                 )
                 val params = layoutParams as? RelativeLayout.LayoutParams
-                params?.addRule(RelativeLayout.BELOW, binding.teamsTitle.id)
+                params?.addRule(RelativeLayout.BELOW, teamsTitle.id)
                 orientation = LinearLayout.VERTICAL
             }
 
@@ -416,7 +491,6 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     params.setMargins(0, 5.dpToPx(), 0, 0)
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
-                    setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 }
 
                 val logo = ImageView(this).apply {
@@ -467,8 +541,8 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                             }
                         }
                     }
-                    val button: Drawable =
-                        context.resources.getDrawable(R.drawable.follow_button_selector)
+                    val button: Drawable? =
+                        ContextCompat.getDrawable(context, R.drawable.follow_button_selector)
                     buttonDrawable = button
                 }
                 itemLayout.addView(followCheckBox)
@@ -484,7 +558,6 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                 )
                 val params = this.layoutParams as LinearLayout.LayoutParams
                 params.setMargins(0, 5.dpToPx(), 0, 0)
-                setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 setOnClickListener {
                     if(Shared.isConnected){
                         val intent = Intent(this@SearchableActivity, AllSearchResultsActivity::class.java)
@@ -500,37 +573,47 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                 }
             }
             teamSearchItems.addView(seeAllTextView)
-            binding.teamsLayout.addView(teamSearchItems)
+            teamsLayout.addView(teamSearchItems)
         }
         else {
-            val teamSearchItems = LinearLayout(this).apply {
+            val allTeamsLayout = LinearLayout(this).apply {
                 layoutParams = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT
                 )
                 val params = layoutParams as? RelativeLayout.LayoutParams
-                params?.addRule(RelativeLayout.BELOW, binding.teamsTitle.id)
+                params?.addRule(RelativeLayout.BELOW, teamsTitle.id)
                 orientation = LinearLayout.VERTICAL
             }
+            teamsLayout.addView(allTeamsLayout)
 
             for(index in teams.indices) {
-                val itemLayout = LinearLayout(this).apply {
+                val teamSearchCard = MaterialCardView(
+                    this,
+                    null,
+                    com.google.android.material.R.attr.materialCardViewElevatedStyle
+                ).apply {
+                    layoutParams =
+                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    radius = 0f
+                    cardElevation = 10f
+                }
+
+                val cardInnerViews = LinearLayout(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         60.dpToPx()
                     )
-                    val params = this.layoutParams as LinearLayout.LayoutParams
-                    params.setMargins(0, 5.dpToPx(), 0, 0)
+                    setPadding(8, 0, 8, 0)
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
-                    setBackgroundColor(ContextCompat.getColor(this.context, R.color.WhiteSmoke))
                 }
 
                 val logo = ImageView(this).apply {
                     layoutParams = LinearLayout.LayoutParams(25.dpToPx(), 25.dpToPx())
                     imageBinding(teams[index]?.team?.logo)
                 }
-                itemLayout.addView(logo)
+                cardInnerViews.addView(logo)
 
                 val nameTextView = TextView(this).apply {
                     layoutParams = LinearLayout.LayoutParams(0,
@@ -542,7 +625,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     text = teams[index]?.team?.name
                     gravity = Gravity.CENTER_VERTICAL
                 }
-                itemLayout.addView(nameTextView)
+                cardInnerViews.addView(nameTextView)
 
                 val followCheck = CheckBox(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
@@ -572,14 +655,14 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                             }
                         }
                     }
-                    val button: Drawable =
-                        context.resources.getDrawable(R.drawable.follow_button_selector)
+                    val button: Drawable? =
+                        ContextCompat.getDrawable(context, R.drawable.follow_button_selector)
                     buttonDrawable = button
                 }
-                itemLayout.addView(followCheck)
-                teamSearchItems.addView(itemLayout)
+                cardInnerViews.addView(followCheck)
+                teamSearchCard.addView(cardInnerViews)
+                allTeamsLayout.addView(teamSearchCard)
             }
-            binding.teamsLayout.addView(teamSearchItems)
         }
     }
 
@@ -591,22 +674,5 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
     private suspend fun doMySearch(query: String) {
         viewModel.searchLeague(query)
         viewModel.searchTeam(query)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        networkConnectivityReceiver.setListener(this)
-        registerReceiver(networkConnectivityReceiver, intentFilter)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        networkConnectivityReceiver.setListener(null)
-        unregisterReceiver(networkConnectivityReceiver)
-    }
-
-    override fun onNetworkStateChanged(isConnected: Boolean) {
-        if(!isConnected) snackBar.show()
-        else snackBar.dismiss()
     }
 }

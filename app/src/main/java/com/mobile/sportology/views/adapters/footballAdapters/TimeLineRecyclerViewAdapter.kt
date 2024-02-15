@@ -1,5 +1,6 @@
 package com.mobile.sportology.views.adapters.footballAdapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -22,25 +23,24 @@ class TimeLineRecyclerViewAdapter: RecyclerView.Adapter<TimeLineRecyclerViewAdap
     }
     val differ = AsyncListDiffer(this, _diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val timeLineItemBinding = TimeLineItemBinding.inflate(LayoutInflater.from(parent.context),
-            parent, false)
-        return ViewHolder(timeLineItemBinding)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(TimeLineItemBinding.inflate(LayoutInflater.from(parent.context),
+            parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
         holder.bind(differ.currentList[position])
-    }
 
     override fun getItemCount(): Int = differ.currentList.size
 
     inner class ViewHolder(
-        private val _timeLineItemBinding: TimeLineItemBinding): RecyclerView.ViewHolder(
-        _timeLineItemBinding.root){
+        private val _timeLineItemBinding: TimeLineItemBinding
+    ): RecyclerView.ViewHolder(
+        _timeLineItemBinding.root
+    ){
         fun bind(item: FixtureById.Response.Event){
-            if(item.type.equals("subst")){
+            Log.i("timeLineBinder", item.toString())
+            if(item.type.equals("subst"))
                 _timeLineItemBinding.comment.text = item.player?.name + "\n" + item.assist?.name
-            }
             else _timeLineItemBinding.comment.text = item.player?.name
         }
     }

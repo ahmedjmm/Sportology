@@ -2,6 +2,7 @@ package com.mobile.sportology.views.viewsUtilities
 
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -11,29 +12,39 @@ import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
 
 @BindingAdapter("match")
 fun scoreBinding(textView: TextView, match: Fixtures.Response) {
-    if((match.fixture?.status?.short == "1H") || (match.fixture?.status?.short == "2H") ||
-        (match.fixture?.status?.short == "HT") || (match.fixture?.status?.short == "ET") ||
-        (match.fixture?.status?.short == "BT") || (match.fixture?.status?.short == "P") ||
-        (match.fixture?.status?.short == "INT") || (match.fixture?.status?.short == "FT") ||
-        (match.fixture?.status?.short == "AET") || (match.fixture?.status?.short == "PEN") ||
-        (match.fixture?.status?.short == "LIVE")) {
-        val homeScore = match.goals?.home
-        val awayScore = match.goals?.away
-        val stringBuilder = StringBuilder(match.fixture.status.long!!).apply {
-            append("\n")
-            append(homeScore)
-            append("-")
-            append(awayScore)
-        }.toString()
-        textView.text = stringBuilder
+    val homeScore = match.goals?.home
+    val awayScore = match.goals?.away
+    val stringBuilder = StringBuilder().apply {
+        append(homeScore)
+        append(" - ")
+        append(awayScore)
+    }.toString()
+    // if match is live
+    when (match.fixture?.status?.short) {
+        "1H", "2H", "HT", "ET", "BT", "P", "INT" -> {
+            textView.apply {
+                text = stringBuilder
+                background = ResourcesCompat.getDrawable(resources, R.drawable.live_score_background, null)
+            }
 //        textView.text = "${match.fixture.status.long}\n${match.goals?.home}-" +
 //                "${match.goals?.away}"
-    }
-    else if(match.fixture?.status?.short == "SUSP") textView.text = match.fixture.status.long
-    else {
-        textView.text = if(DateTimeUtils.timeFormat == textView.resources.getString(R.string.time_format_12))
-            match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo12HS(it) }
-        else match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo24HS(it) }
+        }
+        // if match is finished
+        "FT", "AET", "PEN" -> {
+            textView.apply {
+                text = stringBuilder
+            }
+        }
+        // if match is canceled for any reason
+        "CANC", "PST", "TBD" -> {
+            textView.text = match.fixture.status.long
+        }
+        // if match is scheduled
+        else -> {
+            textView.text = if(DateTimeUtils.timeFormat == "12 HS")
+                match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo12HS(it) }
+            else match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo24HS(it) }
+        }
     }
 }
 

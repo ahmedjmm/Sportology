@@ -2,14 +2,27 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="LeagueDaoTest">
+        <State />
+      </entry>
       <entry key="TeamDaoTest">
         <State />
       </entry>
-      <entry key="TeamDaoTest (1)">
-        <State />
-      </entry>
       <entry key="app">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\Ahmed90\.android\avd\Pixel_7_Pro_API_28.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-14T22:15:48.000539Z" />
+        </State>
       </entry>
     </value>
   </component>

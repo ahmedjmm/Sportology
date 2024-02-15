@@ -76,11 +76,6 @@
             app:layout_constraintTop_toBottomOf="@id/away_image">
         </Constraint>
         <Constraint
-            android:id="@id/errorLayout">
-            <PropertySet
-                app:visibilityMode="ignore"/>
-        </Constraint>
-        <Constraint
             android:id="@id/matchDetailsLayout">
             <PropertySet
                 app:visibilityMode="ignore"/>
@@ -108,20 +103,6 @@
             app:layout_constraintEnd_toStartOf="@id/score"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-<!--        <Constraint android:id="@id/home_name"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/toolbarImage"-->
-<!--            app:layout_constraintEnd_toStartOf="@id/score"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/home_image">-->
-<!--&lt;!&ndash;            <PropertySet android:alpha="0"/>&ndash;&gt;-->
-<!--        </Constraint>-->
-<!--        <Constraint android:id="@id/away_name"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/toolbarImage"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toEndOf="@id/score"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/away_image">-->
-<!--&lt;!&ndash;            <PropertySet android:alpha="0"/>&ndash;&gt;-->
-<!--        </Constraint>-->
         <Constraint android:id="@id/dateTime">
             <PropertySet android:alpha="0"/>
         </Constraint>
@@ -151,11 +132,6 @@
             app:layout_constraintEnd_toStartOf="@id/away_image"
             app:layout_constraintStart_toEndOf="@id/home_image"
             app:layout_constraintTop_toBottomOf="@id/score"/>
-        <Constraint
-            android:id="@id/errorLayout">
-            <PropertySet
-                app:visibilityMode="ignore"/>
-        </Constraint>
         <Constraint
             android:id="@id/matchDetailsLayout">
             <PropertySet

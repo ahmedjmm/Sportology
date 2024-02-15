@@ -11,9 +11,7 @@ class FootBallViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun createFragment(position: Int): Fragment {
-        val dynamicLeagueFragment = DynamicLeagueFragment()
-        dynamicLeagueFragment.leagueOrder = position
-        return dynamicLeagueFragment
+        return DynamicLeagueFragment().apply { leagueOrder = position }
     }
 
     override fun getItemCount() = Shared.LEAGUES_IDS.size

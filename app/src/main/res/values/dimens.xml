@@ -3,14 +3,9 @@
 
     <!--  standings fragment dimensions  -->
     <dimen name="formation_image_width">30dp</dimen>
-    <dimen name="formation_image_height">30dp</dimen>
 
-    <dimen name="rank_text_width">30dp</dimen>
-
-    <dimen name="team_image_width">50dp</dimen>
-    <dimen name="team_image_height">40dp</dimen>
-
-    <dimen name="name_text_width">100dp</dimen>
+    <dimen name="team_image_width">30dp</dimen>
+    <dimen name="team_image_height">30dp</dimen>
 
     <dimen name="other_text_width">50dp</dimen>
 

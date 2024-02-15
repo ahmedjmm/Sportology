@@ -428,7 +428,7 @@
         <item>Pacific/Wallis</item>
     </string-array>
 
-    <string-array name="language_key">
+    <string-array name="news_language_key">
         <item>English</item>
         <item>العربية</item>
         <item>German</item>
@@ -443,7 +443,7 @@
         <item>Chinese</item>
     </string-array>
 
-    <string-array name="language_value">
+    <string-array name="news_language_value">
         <item>en</item>
         <item>ar</item>
         <item>de</item>
@@ -472,9 +472,18 @@
         <item>@string/the_sport_bible</item>
     </string-array>
 
-    <string-array name="search_in">
-        <item>@string/title</item>
-        <item>@string/description</item>
-        <item>@string/content</item>
+    <string-array name="time_format">
+        <item>12 HS</item>
+        <item>24 HS</item>
+    </string-array>
+
+    <string-array name="app_language_value">
+        <item>en</item>
+        <item>ar</item>
+    </string-array>
+
+    <string-array name="app_language_key">
+        <item>English</item>
+        <item>العربية</item>
     </string-array>
 </resources>

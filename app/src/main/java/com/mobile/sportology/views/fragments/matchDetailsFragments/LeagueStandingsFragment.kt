@@ -1,34 +1,55 @@
 package com.mobile.sportology.views.fragments.matchDetailsFragments
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
-import com.mobile.sportology.databinding.FragmentStandingBinding
 import com.mobile.sportology.models.football.Standings
-import com.mobile.sportology.viewModels.MatchDetailsActivityViewModel
+import com.mobile.sportology.viewModels.MatchDetailsViewModel
 import com.mobile.sportology.views.activities.MatchDetailsActivity
+import com.mobile.sportology.views.viewsUtilities.ViewCrossFadeAnimation
 import com.mobile.sportology.views.viewsUtilities.imageBinding
+import kotlinx.android.synthetic.main.error_layout.view.errorText
+import kotlinx.android.synthetic.main.error_layout.view.retry_button
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
-class LeagueStandingsFragment : Fragment(R.layout.fragment_standing) {
-    private lateinit var binding: FragmentStandingBinding
-    private lateinit var matchDetailsViewModel: MatchDetailsActivityViewModel
+class LeagueStandingsFragment : Fragment(R.layout.fragment_standing), ViewCrossFadeAnimation {
+    private lateinit var matchDetailsViewModel: MatchDetailsViewModel
     private lateinit var activity: MatchDetailsActivity
+
+    private lateinit var errorLayout: View
+    private lateinit var loadingIndicator: CircularProgressIndicator
+    private lateinit var standingsView: HorizontalScrollView
+    private lateinit var tableLayout: TableLayout
+
+    override var shortAnimationDuration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        shortAnimationDuration =
+            requireContext().resources.getInteger(android.R.integer.config_shortAnimTime)
+
         activity = requireActivity() as MatchDetailsActivity
+        matchDetailsViewModel = activity.viewModel
         // To avoid returning back to the previous fragment
         activity.onBackPressedDispatcher.addCallback(this) {
             activity.finish()
@@ -40,56 +61,75 @@ class LeagueStandingsFragment : Fragment(R.layout.fragment_standing) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        matchDetailsViewModel = activity.viewModel
-        binding = FragmentStandingBinding.inflate(layoutInflater, container, false)
-        return binding.root
+        return inflater.inflate(R.layout.fragment_standing, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupObservers()
-    }
-
-    private fun setupObservers() {
+        initializeViews(view)
         matchDetailsViewModel.standingsLiveData.observe(viewLifecycleOwner) { responseState ->
             when (responseState) {
                 is ResponseState.Success -> handleSuccess(responseState.data)
                 is ResponseState.Loading -> showLoading()
                 is ResponseState.Error -> showError(responseState.message!!)
-                else -> { }
             }
         }
     }
 
-    private fun showLoading() {
-        with(binding) {
-            loadingIndicator.visibility = View.VISIBLE
-            standingsView.visibility = View.GONE
-            errorLayout.root.visibility = View.GONE
+    override fun hideViewWithAnimation(view: View){
+        view.animate().alpha(0f).setDuration(shortAnimationDuration.toLong())
+            .setListener(object: AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    view.visibility = View.GONE
+                }
+            })
+    }
+
+    override fun showViewWithAnimation(view: View) {
+        view.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(shortAnimationDuration.toLong()).setListener(null)
         }
     }
 
+    private fun initializeViews(view: View) {
+        errorLayout = view.findViewById(R.id.error_layout)
+        loadingIndicator = view.findViewById(R.id.loadingIndicator)
+        standingsView = view.findViewById(R.id.standings_view)
+        tableLayout = view.findViewById(R.id.table_layout)
+    }
+
+    private fun showLoading() {
+        hideViewWithAnimation(standingsView)
+        hideViewWithAnimation(errorLayout)
+        showViewWithAnimation(loadingIndicator)
+    }
+
     private fun showError(errorMessage: String) {
-        with(binding.errorLayout) {
+        hideViewWithAnimation(standingsView)
+        hideViewWithAnimation(loadingIndicator)
+        errorLayout.apply {
             errorText.text = errorMessage
-            root.visibility = View.VISIBLE
-        }
-        with(binding) {
-            standingsView.visibility = View.GONE
-            loadingIndicator.visibility = View.GONE
+            retry_button.setOnClickListener {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    activity.intent?.let {
+                        activity.getStandings(it)
+                    }?: run {
+                        activity.getStandings(activity.args)
+                    }
+                }
+            }
+            showViewWithAnimation(this)
         }
     }
 
     private fun handleSuccess(data: Standings?) {
-        with(binding) {
-            loadingIndicator.visibility = View.GONE
-            if (data?.response?.isNotEmpty() == true) {
-                val standingsList = data.response[0]?.league?.standings?.get(0)
-                standingsList?.let { buildStandingItems(it) }
-                standingsView.visibility = View.VISIBLE
-                errorLayout.root.visibility = View.GONE
-            }
-        }
+        hideViewWithAnimation(loadingIndicator)
+        val standingsList = data?.response?.get(0)?.league?.standings?.get(0)
+        standingsList?.let { buildStandingItems(it) }
+        hideViewWithAnimation(errorLayout)
+        showViewWithAnimation(standingsView)
     }
 
     private fun buildStandingItems(standings: List<Standings.Response.League.Standing?>) {
@@ -101,7 +141,7 @@ class LeagueStandingsFragment : Fragment(R.layout.fragment_standing) {
 
         standings.forEach { teamStanding ->
             val tableRow = createTableRow(teamRank.toString(), teamStanding, layoutParams)
-            binding.tableLayout.addView(tableRow)
+            tableLayout.addView(tableRow)
             teamRank++
         }
     }
@@ -112,8 +152,17 @@ class LeagueStandingsFragment : Fragment(R.layout.fragment_standing) {
         layoutParams: TableRow.LayoutParams
     ): TableRow {
         val context = requireContext()
-        val teamRankTextView = createTextView(teamRank, layoutParams)
-        val teamLogo = createImageView(teamStanding?.team?.logo, R.dimen.team_image_width, R.dimen.team_image_height)
+        val teamRankTextView = createTextView(teamRank, layoutParams).apply {
+            when(teamStanding?.description) {
+                "Promotion - Champions League (Group Stage: )", "CAF Champions League" ->
+                    this.background = ContextCompat.getDrawable(requireContext(), R.drawable.champions_league_qualified)
+                "Promotion - Europa League (Group Stage: )", "CAF Confederation Cup" ->
+                    this.background = ContextCompat.getDrawable(requireContext(), R.drawable.europa_league_qualified)
+                "Relegation - Championship", "Relegation" ->
+                    this.background = ContextCompat.getDrawable(requireContext(), R.drawable.relegation_championship)
+            }
+        }
+        val teamLogo = createImageView(teamStanding?.team?.logo)
         val teamNameTextView = createTextView(teamStanding?.team?.name, layoutParams)
         val pointsTextView = createTextView(teamStanding?.points.toString(), layoutParams)
         val againstForTextView = createTextView(teamStanding?.all?.goals?.against.toString(), layoutParams)
@@ -147,11 +196,11 @@ class LeagueStandingsFragment : Fragment(R.layout.fragment_standing) {
         }
     }
 
-    private fun createImageView(imageUrl: String?, widthDimen: Int, heightDimen: Int): ImageView {
+    private fun createImageView(imageUrl: String?): ImageView {
         return ImageView(requireContext()).apply {
             this.layoutParams = TableRow.LayoutParams(
-                requireContext().resources.getDimensionPixelSize(widthDimen),
-                requireContext().resources.getDimensionPixelSize(heightDimen)
+                requireContext().resources.getDimensionPixelSize(R.dimen.team_image_width),
+                requireContext().resources.getDimensionPixelSize(R.dimen.team_image_height)
             ).apply {
                 setMargins(0, 10, 0, 10)
             }
