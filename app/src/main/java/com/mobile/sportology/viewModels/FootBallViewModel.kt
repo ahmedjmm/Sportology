@@ -231,12 +231,14 @@ class FootBallViewModel @Inject constructor(
                         is ResponseState.Loading -> {}
                         is ResponseState.Error -> {
                             val error = responseState.message
-                            _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                            _laLigaMatchesMutableLiveData.postValue(ResponseState.Error(error))
-                            _ligue1MatchesMutableLiveData.postValue(ResponseState.Error(error))
-                            _serieAMatchesMutableLiveData.postValue(ResponseState.Error(error))
-                            _bundesLigaMatchesMutableLiveData.postValue(ResponseState.Error(error))
-                            _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error))
+                            when(leagueId) {
+                                39 -> _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                                140 -> _laLigaMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                                61 -> _ligue1MatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                                135 -> _serieAMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                                78 -> _bundesLigaMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                                233 -> _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                            }
                         }
                     }
                 }

@@ -108,42 +108,42 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
         initializeViews(view)
         setupLeagueRecyclerView()
         when(leagueOrder) {
-            0 -> footBallViewModel.englandPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
+            39 -> footBallViewModel.englandPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> showMatchesUI(it.data)
                     is ResponseState.Loading -> { showLoadingUI() }
                     is ResponseState.Error -> { showErrorUI(it.message!!) }
                 }
             }
-            1 -> footBallViewModel.laLigaMatchesLiveData.observe(viewLifecycleOwner) {
+            140 -> footBallViewModel.laLigaMatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> { showMatchesUI(it.data) }
                     is ResponseState.Loading -> { showLoadingUI() }
                     is ResponseState.Error -> { showErrorUI(it.message!!) }
                 }
             }
-            2 -> footBallViewModel.ligue1MatchesLiveData.observe(viewLifecycleOwner) {
+            61 -> footBallViewModel.ligue1MatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> { showMatchesUI(it.data) }
                     is ResponseState.Loading -> { showLoadingUI() }
                     is ResponseState.Error -> { showErrorUI(it.message!!) }
                 }
             }
-            3 -> footBallViewModel.serieAMatchesLiveData.observe(viewLifecycleOwner) {
+            135 -> footBallViewModel.serieAMatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> { showMatchesUI(it.data) }
                     is ResponseState.Loading -> { showLoadingUI() }
                     is ResponseState.Error -> { showErrorUI(it.message!!) }
                 }
             }
-            4 -> footBallViewModel.bundesLigaMatchesLiveData.observe(viewLifecycleOwner) {
+            78 -> footBallViewModel.bundesLigaMatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> { showMatchesUI(it.data) }
                     is ResponseState.Loading -> { showLoadingUI() }
                     is ResponseState.Error -> { showErrorUI(it.message!!) }
                 }
             }
-            5 -> footBallViewModel.egyptianPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
+            233 -> footBallViewModel.egyptianPremierLeagueMatchesLiveData.observe(viewLifecycleOwner) {
                 when(it) {
                     is ResponseState.Success -> { showMatchesUI(it.data) }
                     is ResponseState.Loading -> { showLoadingUI() }
