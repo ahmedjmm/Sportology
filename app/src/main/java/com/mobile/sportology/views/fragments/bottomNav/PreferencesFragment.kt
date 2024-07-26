@@ -27,7 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mobile.sportology.BuildConfig
 import com.mobile.sportology.R
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
+import com.mobile.sportology.views.viewsUtilities.DateTimeUtils
 import com.mobile.sportology.servicesAndUtilities.LanguageManager
 import com.mobile.sportology.viewModels.SettingsViewModel
 import com.mobile.sportology.views.activities.HomeActivity

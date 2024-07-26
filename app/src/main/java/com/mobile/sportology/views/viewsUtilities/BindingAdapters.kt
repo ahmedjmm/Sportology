@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mobile.sportology.R
 import com.mobile.sportology.models.football.Fixtures
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
 
 @BindingAdapter("match")
 fun scoreBinding(textView: TextView, match: Fixtures.Response) {

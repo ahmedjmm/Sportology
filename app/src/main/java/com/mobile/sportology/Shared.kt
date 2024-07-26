@@ -36,7 +36,7 @@ object Shared {
         "Africa/Cairo",
         "Africa/Casablanca",
         "Africa/Ceuta",
-        "Africa/Conakry",///
+        "Africa/Conakry",
         "Africa/Dakar",
         "Africa/Dar_es_Salaam",
         "Africa/Djibouti",

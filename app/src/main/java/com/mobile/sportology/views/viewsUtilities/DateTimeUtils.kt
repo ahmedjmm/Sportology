@@ -1,4 +1,4 @@
-package com.mobile.sportology.servicesAndUtilities
+package com.mobile.sportology.views.viewsUtilities
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar

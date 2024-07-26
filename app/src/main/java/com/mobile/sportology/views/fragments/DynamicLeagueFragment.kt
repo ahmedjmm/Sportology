@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +25,7 @@ import com.mobile.sportology.ResponseState
 import com.mobile.sportology.Shared
 import com.mobile.sportology.models.football.Fixtures
 import com.mobile.sportology.models.football.MatchNotificationRoom
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
+import com.mobile.sportology.views.viewsUtilities.DateTimeUtils
 import com.mobile.sportology.servicesAndUtilities.MatchStartNotificationUtility
 import com.mobile.sportology.viewModels.FootBallViewModel
 import com.mobile.sportology.views.activities.HomeActivity
@@ -172,21 +173,24 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
             retry_button.setOnClickListener {
                 if(Shared.isConnected)
                     lifecycleScope.launch(Dispatchers.IO) {
-                        val responseState = footBallViewModel.getLeague(Shared.LEAGUES_IDS[leagueOrder])
-                        if(responseState is ResponseState.Success) {
-                            if(Shared.isLiveMatches)
-                                footBallViewModel.getLeagueMatches(
-                                    leagueId = Shared.LEAGUES_IDS[leagueOrder],
-                                    liveMatches = "all",
-                                    season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
-                                )
-                            else
-                                footBallViewModel.getLeagueMatches(
-                                    leagueId = Shared.LEAGUES_IDS[leagueOrder],
-                                    liveMatches = null,
-                                    season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
-                                )
+                        try {
+                            val responseState = footBallViewModel.getLeague(Shared.LEAGUES_IDS[leagueOrder])
+                            if(responseState is ResponseState.Success) {
+                                if(Shared.isLiveMatches)
+                                    footBallViewModel.getLeagueMatches(
+                                        leagueId = Shared.LEAGUES_IDS[leagueOrder],
+                                        liveMatches = "all",
+                                        season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
+                                    )
+                                else
+                                    footBallViewModel.getLeagueMatches(
+                                        leagueId = Shared.LEAGUES_IDS[leagueOrder],
+                                        liveMatches = null,
+                                        season = responseState.data?.body()!!.response?.get(0)?.seasons?.get(0)?.year!!
+                                    )
+                            }
                         }
+                        catch (_: Exception) {}
                     }
                 else (requireActivity() as HomeActivity).snackBar.show()
             }

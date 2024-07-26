@@ -20,7 +20,7 @@ import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
 import com.mobile.sportology.databinding.ActivityMatchDetailsBinding
 import com.mobile.sportology.repositories.RemoteRepository
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
+import com.mobile.sportology.views.viewsUtilities.DateTimeUtils
 import com.mobile.sportology.servicesAndUtilities.NetworkConnectivityReceiver
 import com.mobile.sportology.viewModels.MatchDetailsViewModel
 import com.mobile.sportology.viewModels.MyViewModelProvider

@@ -1,9 +1,14 @@
 package com.mobile.sportology.views.adapters.footballAdapters
 
+import android.app.AlarmManager
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -93,19 +98,31 @@ class LeagueRecyclerViewAdapter(
             _itemViewBinding.notificationsCheck.setOnCheckedChangeListener { _, isChecked ->
                 val fixture = _itemViewBinding.match
                 fixture?.let {
-                    val isPermissionGranted = onCheckedChangeListener.checkNotificationPermission(
-                        fixture = _itemViewBinding.match!!,
-                        isChecked = isChecked
-                    )
-                    if (isPermissionGranted) {
-                        onCheckedChangeListener.onCheckChange(
-                            fixture = it,
-                            isChecked = isChecked,
-                            action = if(isChecked)
-                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_SHOW)
-                            else
-                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_CANCEL)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val alarmManager = ContextCompat.getSystemService(_itemViewBinding.root.context,
+                            AlarmManager::class.java)
+                        if (alarmManager?.canScheduleExactAlarms() == false) {
+                            Intent().also { intent ->
+                                intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                                _itemViewBinding.root.context.startActivity(intent)
+                            }
+                        }
+                    }
+                    else {
+                        val isPermissionGranted = onCheckedChangeListener.checkNotificationPermission(
+                            fixture = _itemViewBinding.match!!,
+                            isChecked = isChecked
                         )
+                        if (isPermissionGranted) {
+                            onCheckedChangeListener.onCheckChange(
+                                fixture = it,
+                                isChecked = isChecked,
+                                action = if(isChecked)
+                                    _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_SHOW)
+                                else
+                                    _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_CANCEL)
+                            )
+                        }
                     }
                 }
             }
@@ -114,19 +131,31 @@ class LeagueRecyclerViewAdapter(
         fun bind(item: Fixtures.Response) {
             _itemViewBinding.match = item
             _itemViewBinding.notificationsCheck.setOnCheckedChangeListener { _, isChecked ->
-                val isPermissionGranted = onCheckedChangeListener.checkNotificationPermission(
-                    fixture = _itemViewBinding.match!!,
-                    isChecked = isChecked
-                )
-                if (isPermissionGranted) {
-                    onCheckedChangeListener.onCheckChange(
-                        fixture = item,
-                        isChecked = isChecked,
-                        action = if (isChecked)
-                            _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_SHOW)
-                        else
-                            _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_CANCEL)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val alarmManager = ContextCompat.getSystemService(_itemViewBinding.root.context,
+                        AlarmManager::class.java)
+                    if (alarmManager?.canScheduleExactAlarms() == false) {
+                        Intent().also { intent ->
+                            intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                            _itemViewBinding.root.context.startActivity(intent)
+                        }
+                    }
+                }
+                else {
+                    val isPermissionGranted = onCheckedChangeListener.checkNotificationPermission(
+                        fixture = _itemViewBinding.match!!,
+                        isChecked = isChecked
                     )
+                    if (isPermissionGranted) {
+                        onCheckedChangeListener.onCheckChange(
+                            fixture = item,
+                            isChecked = isChecked,
+                            action = if (isChecked)
+                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_SHOW)
+                            else
+                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_CANCEL)
+                        )
+                    }
                 }
             }
             _itemViewBinding.notificationsCheck.visibility =

@@ -18,7 +18,7 @@ import com.google.android.material.tabs.TabLayout
 import com.mobile.sportology.R
 import com.mobile.sportology.Shared
 import com.mobile.sportology.databinding.TabItemBinding
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
+import com.mobile.sportology.views.viewsUtilities.DateTimeUtils
 import com.mobile.sportology.viewModels.FootBallViewModel
 import com.mobile.sportology.views.activities.FavoritesActivity
 import com.mobile.sportology.views.activities.HomeActivity

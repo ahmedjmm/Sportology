@@ -18,7 +18,7 @@ android {
         applicationId "com.mobile.sportology"
         minSdk 27
         targetSdk 34
-        versionCode 1
+        versionCode 3
         versionName "1.0"
 
         testInstrumentationRunner "com.mobile.sportology.HiltTestRunner"

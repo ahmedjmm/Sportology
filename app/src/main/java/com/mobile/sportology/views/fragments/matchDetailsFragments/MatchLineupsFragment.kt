@@ -20,7 +20,7 @@ import com.mobile.sportology.R
 import com.mobile.sportology.ResponseState
 import com.mobile.sportology.databinding.FragmentLineupsBinding
 import com.mobile.sportology.models.football.FixtureById
-import com.mobile.sportology.servicesAndUtilities.DateTimeUtils
+import com.mobile.sportology.views.viewsUtilities.DateTimeUtils
 import com.mobile.sportology.viewModels.MatchDetailsViewModel
 import com.mobile.sportology.views.activities.MatchDetailsActivity
 import com.mobile.sportology.views.viewsUtilities.ViewCrossFadeAnimation
