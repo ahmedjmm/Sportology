@@ -47,11 +47,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="500dp">
 
-                <com.mobile.sportology.views.FootballFieldView
+                <com.dev.goalpulse.views.FootballFieldView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
-                </com.mobile.sportology.views.FootballFieldView>
+                </com.dev.goalpulse.views.FootballFieldView>
 
                 <LinearLayout
                     android:id="@+id/lineups_layout"

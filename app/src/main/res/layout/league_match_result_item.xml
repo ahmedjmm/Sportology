@@ -5,7 +5,7 @@
     <data>
         <variable
             name="match"
-            type="com.mobile.sportology.models.football.Fixtures.Response"/>
+            type="com.dev.goalpulse.models.football.Fixtures.Response"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView

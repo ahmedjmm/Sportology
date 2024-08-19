@@ -7,6 +7,39 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:930046062186:android:ead111f152c65b7f44e413",
+        "android_client_info": {
+          "package_name": "com.dev.goalpulse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "930046062186-fl7901k4dnehd3ro75n3f6sb4f2etktr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev.goalpulse",
+            "certificate_hash": "e3fbf94cb4047a17facf92a055434cc4b91f5e47"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcMCRnlcAh9veWMEZ7l1HCXwY0QNr4yhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930046062186-ooje6s0g02ovubspkouarsebtpfhgak6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:930046062186:android:c9523cd4089a654a44e413",
         "android_client_info": {
           "package_name": "com.mobile.sportology"
@@ -14,11 +47,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "930046062186-pv3gqukrfvsauqlku2mo04gcu50472lo.apps.googleusercontent.com",
+          "client_id": "930046062186-8rqlq54j9iqoq1df8abg0mid338ptdap.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mobile.sportology",
-            "certificate_hash": "b65c6e50321b0a4eda60042b5a6101833b8ff29b"
+            "certificate_hash": "e3fbf94cb4047a17facf92a055434cc4b91f5e47"
+          }
+        },
+        {
+          "client_id": "930046062186-jbj6ar2d2j35ehqaolujq6bqdlrrandr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.sportology",
+            "certificate_hash": "77a21ad046fe4f5fe49f5a780865b66121a23148"
           }
         }
       ],

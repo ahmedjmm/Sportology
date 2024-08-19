@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/football"
-        android:name="com.mobile.sportology.views.fragments.bottomNav.FootBallFragment"
+        android:name="com.dev.goalpulse.views.fragments.bottomNav.FootBallFragment"
         android:label="@string/matches"
         tools:layout="@layout/fragment_football">
         <action
@@ -16,20 +16,20 @@
 
     <fragment
         android:id="@+id/settings"
-        android:name="com.mobile.sportology.views.fragments.bottomNav.PreferencesFragment"
+        android:name="com.dev.goalpulse.views.fragments.bottomNav.PreferencesFragment"
         android:label="@string/settings">
     </fragment>
 
     <fragment
         android:id="@+id/news"
-        android:name="com.mobile.sportology.views.fragments.bottomNav.NewsFragment"
+        android:name="com.dev.goalpulse.views.fragments.bottomNav.NewsFragment"
         android:label="@string/news"
         tools:layout="@layout/fragment_news">
     </fragment>
 
     <activity
         android:id="@+id/matchDetailsActivity"
-        android:name="com.mobile.sportology.views.activities.MatchDetailsActivity"
+        android:name="com.dev.goalpulse.views.activities.MatchDetailsActivity"
         android:label="MatchDetailsActivity"
         tools:layout="@layout/activity_home">
         <argument

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sportology</string>
+    <string name="app_name" translatable="false">Goal Pulse</string>
 
     <!-- HomeActivity strings  -->
     <string name="matches">Matches</string>

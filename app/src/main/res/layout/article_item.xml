@@ -5,7 +5,7 @@
     <data>
         <variable
             name="article"
-            type="com.mobile.sportology.models.news.News.Article" />
+            type="com.dev.goalpulse.models.news.News.Article" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

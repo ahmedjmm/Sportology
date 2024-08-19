@@ -28,8 +28,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.mobile.sportology" />
-                  <option name="mobileSdkAppId" value="1:930046062186:android:c9523cd4089a654a44e413" />
+                  <option name="appId" value="com.dev.goalpulse" />
+                  <option name="mobileSdkAppId" value="1:930046062186:android:ead111f152c65b7f44e413" />
                   <option name="projectId" value="sportology-b9d9d" />
                   <option name="projectNumber" value="930046062186" />
                 </ConnectionSetting>

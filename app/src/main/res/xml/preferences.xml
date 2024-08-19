@@ -5,7 +5,7 @@
     <PreferenceCategory
         app:title="@string/account_and_sync"
         app:iconSpaceReserved="false">
-        <com.mobile.sportology.views.fragments.bottomNav.CustomPreference
+        <com.dev.goalpulse.views.fragments.bottomNav.CustomPreference
             app:key="google_account"
             app:layout="@layout/custom_preference" />
 
