@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.dev.goalpulse.R
 import com.dev.goalpulse.databinding.TabItemBinding
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -69,8 +70,10 @@ class FootBallFragment : Fragment(R.layout.fragment_football) {
         footBallViewModel.leaguesLiveData.observe(viewLifecycleOwner) {
             it.forEach { league ->
                 TabItemBinding.inflate(layoutInflater).apply {
-                    this.league = league.response?.get(0)?.leagueData
+                    this.league = league[0]
                     val tab = tabLayout.newTab().setCustomView(this.root)
+                    val leagueLogoString = "https://images.sportdevs.com/${league[0].hashImage}.png"
+                    Glide.with(this@FootBallFragment).load(leagueLogoString).into(leagueLogo);
                     tabLayout.addTab(tab)
                     val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in)
                     tab.customView?.startAnimation(animation)
@@ -88,32 +91,32 @@ class FootBallFragment : Fragment(R.layout.fragment_football) {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
-        liveMatchesSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Shared.isLiveMatches = isChecked
-
-            footBallViewModel.leaguesLiveData.value?.let {
-                for(index in it.indices) {
-                    val season = it[index].response?.get(0)?.seasons?.get(0)?.year!!
-                    val leagueId = it[index].response?.get(0)?.leagueData?.id!!
-                    if(Shared.isLiveMatches)
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            footBallViewModel.getLeagueMatches(
-                                leagueId = leagueId,
-                                season = season,
-                                liveMatches = resources.getString(R.string.live_matches)
-                            )
-                        }
-                    else
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            footBallViewModel.getLeagueMatches(
-                                leagueId = leagueId,
-                                season = season,
-                                liveMatches = null
-                            )
-                        }
-                }
-            }
-        }
+//        liveMatchesSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            Shared.isLiveMatches = isChecked
+//
+//            footBallViewModel.leaguesLiveData.value?.let {
+//                for(index in it.indices) {
+//                    val season = it[index].response?.get(0)?.seasons?.get(0)?.year!!
+//                    val leagueId = it[index].response?.get(0)?.leagueData?.id!!
+//                    if(Shared.isLiveMatches)
+//                        lifecycleScope.launch(Dispatchers.IO) {
+//                            footBallViewModel.getLeagueMatches(
+//                                leagueId = leagueId,
+//                                season = season,
+//                                liveMatches = resources.getString(R.string.live_matches)
+//                            )
+//                        }
+//                    else
+//                        lifecycleScope.launch(Dispatchers.IO) {
+//                            footBallViewModel.getLeagueMatches(
+//                                leagueId = leagueId,
+//                                season = season,
+//                                liveMatches = null
+//                            )
+//                        }
+//                }
+//            }
+//        }
 
         favoritesButton.setOnClickListener {
             startActivity(Intent(this.context, FavoritesActivity::class.java))

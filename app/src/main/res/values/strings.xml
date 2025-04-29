@@ -115,4 +115,5 @@
     <string name="sync_settings_summery">When sync option is on, any changes you do will be uploaded to the cloud so you can import app settings anytime later</string>
     <string name="import_settings">Import settings from cloud</string>
     <string name="no_live_matches">No live matches currently</string>
+    <string name="all_data_has_been_fetched">All data has been fetched.</string>
 </resources>

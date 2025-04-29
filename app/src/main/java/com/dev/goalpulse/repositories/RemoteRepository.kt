@@ -1,7 +1,10 @@
 package com.dev.goalpulse.repositories
 
+import com.dev.goalpulse.ApiResponseHandler
+import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.api.FootballApi
 import com.dev.goalpulse.api.NewsApi
+import com.dev.goalpulse.models.football.Matches
 import javax.inject.Inject
 
 class RemoteRepository @Inject constructor(
@@ -9,13 +12,22 @@ class RemoteRepository @Inject constructor(
     private val newsApi: NewsApi?
 ) {
 
-    suspend fun getLeague(id: Int) = footballApi?.getLeague(leagueId = id)
+    suspend fun getLeague(id: String) = footballApi?.getLeague(leagueId = id)
 
-    suspend fun getLeagueMatches(leagueId: Int, season: Int) =
-        footballApi?.getLeagueMatches(leagueId = leagueId, season = season)
+    suspend fun getLeagueMatches(
+        seasonId: String,
+        matchStatus: String,
+        offset: String = "0"
+    ): ResponseState<Matches> =
+        ApiResponseHandler.handleResponse {
+            footballApi?.getLeagueMatches(
+                seasonId = seasonId,
+                matchStatus = matchStatus,
+                offset = offset
+            )!!
+        }
 
-    suspend fun getLeagueLiveMatches(leagueId: Int, season: Int, liveMatches: String?) =
-        footballApi?.getLeagueLiveMatches(leagueId = leagueId, season = season, liveMatches = liveMatches)
+    suspend fun getSeasonsByLeague(leagueId: String) = footballApi?.getSeasonsByLeague(leagueId)
 
     suspend fun getStandings(leagueId: Int, season:Int) =
         footballApi?.getStandings(leagueId = leagueId, season = season)

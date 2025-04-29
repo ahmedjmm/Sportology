@@ -15,7 +15,7 @@ import org.junit.Test
 
 @HiltAndroidTest
 @SmallTest
-class LeagueDaoTest {
+class LeaguesDaoTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)

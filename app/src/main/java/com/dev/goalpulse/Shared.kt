@@ -3,14 +3,13 @@ package com.dev.goalpulse
 import okhttp3.internal.immutableListOf
 
 object Shared {
-    var isLiveMatches = false
     var isConnected = true
 
     const val NEWS_BASE_URL = "https://newsapi.org"
-    const val FOOTBALL_BASE_URL = "https://v3.football.api-sports.io"
+    const val FOOTBALL_BASE_URL = "https://football.sportdevs.com"
     val SAVED_MATCHES_NOTIFICATIONS_IDS = mutableListOf<Int>()
-    //39, 140, 61, 135, 78, 233 england, spain, france, italy, germany, egypt
-    val LEAGUES_IDS = immutableListOf(39, 140, 61, 135,)
+    //england, spain, italy, germany, france, egypt
+    val LEAGUES_IDS = immutableListOf("eq.16", "eq.55", "eq.57", "eq.21", "eq.662", "eq.27")
 //    val LEAGUES_IDS = mapOf(
 //        "england" to 39,
 //        "spain" to 140,

@@ -11,9 +11,10 @@ import com.dev.goalpulse.R
 import com.google.gson.JsonSyntaxException
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.Shared
-import com.dev.goalpulse.models.football.Fixtures
-import com.dev.goalpulse.models.football.League
+import com.dev.goalpulse.models.football.Leagues
 import com.dev.goalpulse.models.football.MatchNotificationRoom
+import com.dev.goalpulse.models.football.Matches
+import com.dev.goalpulse.models.football.Seasons
 import com.dev.goalpulse.repositories.DefaultLocalRepository
 import com.dev.goalpulse.repositories.RemoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,290 +35,319 @@ class FootBallViewModel @Inject constructor(
     private val remoteRepository: RemoteRepository,
     private val defaultLocalRepository: DefaultLocalRepository
 ): ViewModel() {
-    private val leagues: MutableList<League> = mutableListOf()
-    private val _leaguesMutableLiveData = MutableLiveData<MutableList<League>>()
-    val leaguesLiveData: LiveData<MutableList<League>> = _leaguesMutableLiveData
-    private val _englandPremierLeagueMatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
-    val englandPremierLeagueMatchesLiveData = _englandPremierLeagueMatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
-        when (responseState) {
-            is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
-                }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
+    private var _englandPremierLeagueMatchesDates = mutableListOf<String>()
+    private val _englandPremierLeagueMatches = mutableListOf<Any>()
+
+    private var _laLigaMatchesDates = mutableListOf<String>()
+    private val _laLigaMatches = mutableListOf<Any>()
+
+    private var _ligue1MatchesDates = mutableListOf<String>()
+    private val _ligue1Matches = mutableListOf<Any>()
+
+    private var _serieAMatchesDates = mutableListOf<String>()
+    private val _serieAMatches = mutableListOf<Any>()
+
+    private var _bundesLigaMatchesDates = mutableListOf<String>()
+    private val _bundesLigaMatches = mutableListOf<Any>()
+
+    private var _egyptianPremierLeagueMatchesDates = mutableListOf<String>()
+    private val _egyptianPremierLeagueMatches = mutableListOf<Any>()
+
+    private val _leagues: MutableList<Leagues> = mutableListOf()
+    private val _leaguesMutableLiveData = MutableLiveData<MutableList<Leagues>>()
+    val leaguesLiveData: LiveData<MutableList<Leagues>> = _leaguesMutableLiveData
+
+    private val _englandPremierLeagueMatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
+    val englandPremierLeagueMatchesLiveData =
+        _englandPremierLeagueMatchesMutableLiveData.map { responseState ->
+            when (responseState) {
+                is ResponseState.Success -> {
+                    val formatedMatchesData = reformatMatchesData(
+                        responseState,
+                        _englandPremierLeagueMatchesDates,
+                        _englandPremierLeagueMatches
+                    )
+
+                    if (responseState.data?.size!! < 50) {
+                        return@map ResponseState.Success(
+                            data = formatedMatchesData,
+                            message = app.getString(R.string.all_data_has_been_fetched))
                     }
+                    return@map ResponseState.Success(data = formatedMatchesData)
                 }
-                return@map ResponseState.Success(leagueMatches)
-            }
-            is ResponseState.Loading -> return@map ResponseState.Loading()
-            is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
-        }
-    }
 
-    private val _laLigaMatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
+                is ResponseState.Loading -> return@map ResponseState.Loading()
+                is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
+            }
+        }
+
+
+    private val _laLigaMatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
     val laLigaMatchesLiveData = _laLigaMatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
         when (responseState) {
             is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
+                val formatedMatchesData = reformatMatchesData(
+                    responseState,
+                    _laLigaMatchesDates,
+                    _laLigaMatches
+                )
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
+                if (responseState.data?.size!! < 50) {
+                    return@map ResponseState.Success(
+                        data = formatedMatchesData,
+                        message = app.getString(R.string.all_data_has_been_fetched))
                 }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
-                    }
-                }
-                return@map ResponseState.Success(leagueMatches)
+                return@map ResponseState.Success(data = formatedMatchesData)
             }
+
             is ResponseState.Loading -> return@map ResponseState.Loading()
             is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
     }
 
-    private val _ligue1MatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
+    private val _ligue1MatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
     val ligue1MatchesLiveData = _ligue1MatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
         when (responseState) {
             is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
+                val formatedMatchesData = reformatMatchesData(
+                    responseState,
+                    _ligue1MatchesDates,
+                    _ligue1Matches
+                )
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
+                if (responseState.data?.size!! < 50) {
+                    return@map ResponseState.Success(
+                        data = formatedMatchesData,
+                        message = app.getString(R.string.all_data_has_been_fetched))
                 }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
-                    }
-                }
-                return@map ResponseState.Success(leagueMatches)
+                return@map ResponseState.Success(data = formatedMatchesData)
             }
+
             is ResponseState.Loading -> return@map ResponseState.Loading()
             is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
     }
 
-    private val _serieAMatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
+    private val _serieAMatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
     val serieAMatchesLiveData = _serieAMatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
         when (responseState) {
             is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
+                val formatedMatchesData = reformatMatchesData(
+                    responseState,
+                    _serieAMatchesDates,
+                    _serieAMatches
+                )
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
+                if (responseState.data?.size!! < 50) {
+                    return@map ResponseState.Success(
+                        data = formatedMatchesData,
+                        message = app.getString(R.string.all_data_has_been_fetched))
                 }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
-                    }
-                }
-                return@map ResponseState.Success(leagueMatches)
+                return@map ResponseState.Success(data = formatedMatchesData)
             }
+
             is ResponseState.Loading -> return@map ResponseState.Loading()
             is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
     }
 
-    private val _bundesLigaMatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
+    private val _bundesLigaMatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
     val bundesLigaMatchesLiveData = _bundesLigaMatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
         when (responseState) {
             is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
+                val formatedMatchesData = reformatMatchesData(
+                    responseState,
+                    _bundesLigaMatchesDates,
+                    _bundesLigaMatches
+                )
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
+                if (responseState.data?.size!! < 50) {
+                    return@map ResponseState.Success(
+                        data = formatedMatchesData,
+                        message = app.getString(R.string.all_data_has_been_fetched))
                 }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
-                    }
-                }
-                return@map ResponseState.Success(leagueMatches)
+                return@map ResponseState.Success(data = formatedMatchesData)
             }
+
             is ResponseState.Loading -> return@map ResponseState.Loading()
             is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
     }
 
-    private val _egyptianPremierLeagueMatchesMutableLiveData = MutableLiveData<ResponseState<Fixtures>>()
-    val egyptianPremierLeagueMatchesLiveData = _egyptianPremierLeagueMatchesMutableLiveData.map { responseState ->
-        var matchesDates = mutableListOf<String>()
-        val leagueMatches = mutableListOf<Any>()
-        when (responseState) {
-            is ResponseState.Success -> {
-                if(responseState.data?.response?.isEmpty() == true)
-                    return@map ResponseState.Error(app.getString(R.string.no_live_matches))
+    private val _egyptianPremierLeagueMatchesMutableLiveData = MutableLiveData<ResponseState<Matches>>()
+    val egyptianPremierLeagueMatchesLiveData =
+        _egyptianPremierLeagueMatchesMutableLiveData.map { responseState ->
+            when (responseState) {
+                is ResponseState.Success -> {
+                    val formatedMatchesData = reformatMatchesData(
+                        responseState,
+                        _egyptianPremierLeagueMatchesDates,
+                        _egyptianPremierLeagueMatches
+                    )
 
-                responseState.data?.response?.forEach{
-                    matchesDates.add(it?.fixture?.date?.substring(0, 10)!!)
-                }
-                matchesDates = matchesDates.distinct().toMutableList()
-                sortDatesList(matchesDates)
-                for(datesIndex in matchesDates.indices) {
-                    leagueMatches.add(matchesDates[datesIndex])
-                    for(fixtureIndex in responseState.data?.response!!.indices) {
-                        if(responseState.data.response[fixtureIndex]?.fixture?.date!!.contains(matchesDates[datesIndex]))
-                            leagueMatches.add(responseState.data.response[fixtureIndex]!!)
+                    if (responseState.data?.size!! < 50) {
+                        return@map ResponseState.Success(
+                            data = formatedMatchesData,
+                            message = app.getString(R.string.all_data_has_been_fetched))
                     }
+                    return@map ResponseState.Success(data = formatedMatchesData)
                 }
-                return@map ResponseState.Success(leagueMatches)
+
+                is ResponseState.Loading -> return@map ResponseState.Loading()
+                is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
             }
-            is ResponseState.Loading -> return@map ResponseState.Loading()
-            is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
-    }
+
+//    private val _seasonsMutableLiveData = MutableLiveData<ResponseState<Seasons>>()
+//    val seasonsLiveData = _seasonsMutableLiveData.map { responseState ->
+//        when(responseState) {
+//            is ResponseState.Success -> {
+//                if(responseState.data?.isEmpty() == true)
+//                    return@map ResponseState.Error("No data")
+//
+//                val size = responseState.data?.get(0)?.seasons?.size!!
+//                val seasons = mutableListOf<Seasons.SeasonsItem.Season>()
+//                responseState.data[0].seasons?.get(0)?.let { seasons.add(it) }
+//                responseState.data[0].seasons?.get(size-1)?.let { seasons.add(it) }
+//                return@map ResponseState.Success(seasons)
+//            }
+//            is ResponseState.Loading -> return@map ResponseState.Loading()
+//            is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
+//        }
+//    }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            if(Shared.isConnected) {
+            if (Shared.isConnected) {
                 Shared.LEAGUES_IDS.forEach { leagueId ->
-                    when(val responseState = getLeague(leagueId)) {
-                        is ResponseState.Success -> {
-                            if(Shared.isLiveMatches)
-                                responseState.data?.body()?.response?.get(0)?.seasons?.get(0)?.year?.let { season ->
-                                    getLeagueMatches(
-                                        leagueId,
-                                        season,
-                                        app.getString(R.string.live_matches)
-                                    )
-                                }
-                            else
-                                responseState.data?.body()?.response?.get(0)?.seasons?.get(0)?.year?.let { season ->
-                                    getLeagueMatches(
-                                        leagueId,
-                                        season,
-                                        null
-                                    )
-                                }
-                        }
-                        is ResponseState.Loading -> {}
+                    when (val responseState = getLeague(leagueId)) {
                         is ResponseState.Error -> {
                             val error = responseState.message
-                            when(leagueId) {
-                                39 -> _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                                140 -> _laLigaMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                                61 -> _ligue1MatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                                135 -> _serieAMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                                78 -> _bundesLigaMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
-                                233 -> _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Error(error!!))
+                            when (leagueId) {
+                                "eq.16" -> _englandPremierLeagueMatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
+
+                                "eq.55" -> _laLigaMatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
+
+                                "eq.662" -> _ligue1MatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
+
+                                "eq.57" -> _serieAMatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
+
+                                "eq.21" -> _bundesLigaMatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
+
+                                "eq.27" -> _egyptianPremierLeagueMatchesMutableLiveData.postValue(
+                                    ResponseState.Error(error!!))
                             }
                         }
+                        else -> {}
                     }
                 }
-                _leaguesMutableLiveData.postValue(leagues)
+                _leaguesMutableLiveData.postValue(_leagues)
             }
         }
     }
 
-    suspend fun getLeague(id: Int): ResponseState<out Response<League>?> = viewModelScope.async(Dispatchers.IO) {
-        if (Shared.isConnected) {
-            try {
-                val response = remoteRepository.getLeague(id)
-                response?.body()?.let { leagues.add(it) }
-                return@async ResponseState.Success(response)
-            } catch (exception: Exception) {
-                return@async handleLeaguesException(exception)
-            }
-        }
-        else {
-            return@async ResponseState.Error(app.getString(R.string.unable_to_connect))
-        }
-    }.await()
+    suspend fun getSeasonByLeague(leagueId: String): ResponseState<out Response<Seasons>?> =
+        viewModelScope.async(Dispatchers.IO) {
+            if (Shared.isConnected) {
+                try {
+                    val response = remoteRepository.getSeasonsByLeague(leagueId)
 
-    suspend fun getLeagueMatches(leagueId: Int, season: Int, liveMatches: String?) {
+                    if (response?.body()?.isNotEmpty() == true)
+                        return@async ResponseState.Success(response)
+                    else
+                        return@async ResponseState.Error(app.getString(R.string.data_not_provided))
+                } catch (exception: Exception) {
+                    return@async handleSeasonsException(exception)
+                }
+            } else {
+                return@async ResponseState.Error(app.getString(R.string.unable_to_connect))
+            }
+        }.await()
+
+    suspend fun getLeague(id: String): ResponseState<out Response<Leagues>?> =
+        viewModelScope.async(Dispatchers.IO) {
+            if (Shared.isConnected) {
+                try {
+                    val response = remoteRepository.getLeague(id)
+                    response?.body()?.let { _leagues.add(it) }
+                    return@async ResponseState.Success(response)
+                } catch (exception: Exception) {
+                    return@async handleLeaguesException(exception)
+                }
+            } else {
+                return@async ResponseState.Error(app.getString(R.string.unable_to_connect))
+            }
+        }.await()
+
+    suspend fun getLeagueMatches(leagueId: String, seasonId: String = "eq.45769",
+                                 matchStatus: String = "", offset: String = "0") =
         viewModelScope.launch(Dispatchers.IO) {
             when(leagueId) {
-                39 -> _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Loading())
-                140 -> _laLigaMatchesMutableLiveData.postValue(ResponseState.Loading())
-                61 -> _ligue1MatchesMutableLiveData.postValue(ResponseState.Loading())
-                135 -> _serieAMatchesMutableLiveData.postValue(ResponseState.Loading())
-                78 -> _bundesLigaMatchesMutableLiveData.postValue(ResponseState.Loading())
-                233 -> _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Loading())
+                Shared.LEAGUES_IDS[0] ->
+                    _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Loading())
+                Shared.LEAGUES_IDS[1] ->
+                    _laLigaMatchesMutableLiveData.postValue(ResponseState.Loading())
+                Shared.LEAGUES_IDS[2] ->
+                    _ligue1MatchesMutableLiveData.postValue (ResponseState.Loading())
+                Shared.LEAGUES_IDS[3] ->
+                    _serieAMatchesMutableLiveData.postValue (ResponseState.Loading())
+                Shared.LEAGUES_IDS[4] ->
+                    _bundesLigaMatchesMutableLiveData.postValue (ResponseState.Loading())
+                Shared.LEAGUES_IDS[5] ->
+                    _egyptianPremierLeagueMatchesMutableLiveData.postValue (ResponseState.Loading())
             }
+            val response = remoteRepository.getLeagueMatches(seasonId = seasonId,
+                matchStatus = matchStatus, offset = offset)
             try {
-                val response = liveMatches?.let {
-                    remoteRepository.getLeagueLiveMatches(
-                        leagueId = leagueId,
-                        season = season,
-                        liveMatches = it
-                    )
-                } ?: remoteRepository.getLeagueMatches(leagueId, season)
                 when(leagueId) {
-                    39 -> _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
-                    140 -> _laLigaMatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
-                    61 -> _ligue1MatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
-                    135 -> _serieAMatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
-                    78 ->_bundesLigaMatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
-                    233 -> _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Success(response?.body()!!))
+                    Shared.LEAGUES_IDS[0] -> {
+                        _englandPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
+                    Shared.LEAGUES_IDS[1] -> {
+                        _laLigaMatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
+                    Shared.LEAGUES_IDS[2] -> {
+                        _ligue1MatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
+                    Shared.LEAGUES_IDS[3] -> {
+                        _serieAMatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
+                    Shared.LEAGUES_IDS[4] -> {
+                        _bundesLigaMatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
+                    Shared.LEAGUES_IDS[5] -> {
+                        _egyptianPremierLeagueMatchesMutableLiveData.postValue(ResponseState.Success(response.data!!))
+                    }
                 }
-            }
-            catch (exception: Exception) {
-                when(leagueId) {
-                    39 -> handleMatchesException(_englandPremierLeagueMatchesMutableLiveData, exception)
-                    140 -> handleMatchesException(_laLigaMatchesMutableLiveData, exception)
-                    61 -> handleMatchesException(_ligue1MatchesMutableLiveData, exception)
-                    135 -> handleMatchesException(_serieAMatchesMutableLiveData, exception)
-                    78 -> handleMatchesException(_bundesLigaMatchesMutableLiveData, exception)
-                    233 -> handleMatchesException(_egyptianPremierLeagueMatchesMutableLiveData, exception)
+            } catch (exception: Exception) {
+                Log.e("getLeagueMatches()", exception.toString())
+                response.message?.let {
+                    handleMatchesException(_englandPremierLeagueMatchesMutableLiveData, it)
+                    handleMatchesException(_laLigaMatchesMutableLiveData, it)
+                    handleMatchesException(_ligue1MatchesMutableLiveData, it)
+                    handleMatchesException(_serieAMatchesMutableLiveData, it)
+                    handleMatchesException(_bundesLigaMatchesMutableLiveData, it)
+                    handleMatchesException(_egyptianPremierLeagueMatchesMutableLiveData, it)
                 }
             }
         }.join()
-    }
+
 
     private fun handleMatchesException(
-        liveData: MutableLiveData<ResponseState<Fixtures>>,
-        exception: Exception
+        liveData: MutableLiveData<ResponseState<Matches>>,
+        exception: String
     ) {
-        val errorMessage = when (exception) {
-            is JsonSyntaxException -> app.getString(R.string.limit_reached)
-            is SocketTimeoutException -> exception.message!!
-            is UnknownHostException -> exception.message!!
-            is MalformedURLException -> app.getString(R.string.unknown_error)
-            else -> app.getString(R.string.unknown_error)
-        }
-        Log.e("handleMatchesException()", exception.toString())
-        liveData.postValue(ResponseState.Error(errorMessage))
+        Log.e("handleMatchesException()", exception)
+        liveData.postValue(ResponseState.Error(exception))
     }
 
-    private fun handleLeaguesException(exception: Exception): ResponseState<Response<League>> {
+    private fun handleLeaguesException(exception: Exception): ResponseState<Response<Leagues>> {
         val errorMessage = when (exception) {
             is JsonSyntaxException -> app.getString(R.string.limit_reached)
             is SocketTimeoutException -> exception.message!!
@@ -326,6 +356,18 @@ class FootBallViewModel @Inject constructor(
             else -> app.getString(R.string.unknown_error)
         }
         Log.e("handleLeagueException()", exception.toString())
+        return ResponseState.Error(errorMessage)
+    }
+
+    private fun handleSeasonsException(exception: Exception): ResponseState<Response<Seasons>> {
+        val errorMessage = when (exception) {
+            is JsonSyntaxException -> app.getString(R.string.limit_reached)
+            is SocketTimeoutException -> exception.message!!
+            is UnknownHostException -> exception.message!!
+            is MalformedURLException -> app.getString(R.string.unknown_error)
+            else -> app.getString(R.string.unknown_error)
+        }
+        Log.e("handleSeasonsException()", exception.toString())
         return ResponseState.Error(errorMessage)
     }
 
@@ -338,6 +380,26 @@ class FootBallViewModel @Inject constructor(
 
     suspend fun upsertMatchNotification(matchNotificationRoom: MatchNotificationRoom) =
         defaultLocalRepository.upsertMatchNotification(matchNotificationRoom)
+
+    private fun reformatMatchesData(
+        responseState: ResponseState<Matches>,
+        dates: MutableList<String>,
+        matches: MutableList<Any>
+    ): MutableList<Any> {
+        responseState.data?.forEach {
+            dates.add(it.startTime?.substring(0, 10)!!)
+        }
+        sortDatesList(dates)
+        for (datesIndex in dates.indices) {
+            matches.add(dates[datesIndex])
+            for (fixtureIndex in responseState.data?.indices!!) {
+                if (responseState.data[fixtureIndex].startTime!!.contains(dates[datesIndex]))
+                    matches.add(responseState.data[fixtureIndex])
+            }
+        }
+        val newMatches = matches.distinct().toMutableList()
+        return newMatches
+    }
 
     private fun sortDatesList(matchesDates: MutableList<String>) {
         matchesDates.sortWith { date1, date2 ->

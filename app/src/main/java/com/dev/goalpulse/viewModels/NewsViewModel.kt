@@ -133,6 +133,5 @@ class NewsViewModel @Inject constructor(
         sources = sources.replace(Regex(",+"), ",")
         sources = sources.removePrefix(",")
         sources = sources.removeSuffix(",")
-        Log.i("sources", sources)
     }
 }

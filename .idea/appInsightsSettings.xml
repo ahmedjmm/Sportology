@@ -9,7 +9,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.dev.supermarket" />
+                  <option name="appId" value="com.mobile.sportology" />
                 </ConnectionSetting>
               </option>
               <option name="failureTypes">

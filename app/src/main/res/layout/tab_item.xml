@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <variable
             name="league"
-            type="com.dev.goalpulse.models.football.League.Response.LeagueData" />
+            type="com.dev.goalpulse.models.football.Leagues.LeagueItem" />
     </data>
 
     <LinearLayout
@@ -17,7 +16,6 @@
 
         <ImageView
             android:id="@+id/leagueLogo"
-            app:url="@{league.logo}"
             android:layout_width="match_parent"
             android:layout_height="25dp"/>
 

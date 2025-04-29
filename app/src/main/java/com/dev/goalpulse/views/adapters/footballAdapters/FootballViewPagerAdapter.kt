@@ -7,11 +7,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.dev.goalpulse.Shared
 import com.dev.goalpulse.views.fragments.DynamicLeagueFragment
 
+
 class FootBallViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle):
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun createFragment(position: Int): Fragment {
-        return DynamicLeagueFragment().apply { leagueOrder = Shared.LEAGUES_IDS[position] }
+        return DynamicLeagueFragment().apply {
+            leagueOrder = position
+        }
     }
 
     override fun getItemCount() = Shared.LEAGUES_IDS.size

@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.goalpulse.R
+import com.dev.goalpulse.Shared
 import com.dev.goalpulse.databinding.LeagueMatchDateItemBinding
 import com.dev.goalpulse.databinding.LeagueMatchResultItemBinding
-import com.dev.goalpulse.Shared
-import com.dev.goalpulse.models.football.Fixtures
+import com.dev.goalpulse.models.football.Matches
 
-class LeagueRecyclerViewAdapter(
+class LeagueMatchesRecyclerViewAdapter(
     private val onCheckedChangeListener: OnCheckedChangeListener
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val _diffCallback = object : DiffUtil.ItemCallback<Any>() {
@@ -50,7 +50,7 @@ class LeagueRecyclerViewAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is DateViewHolder -> holder.bind(differ.currentList[position] as String)
-            is MatchResultViewHolder -> holder.bind(differ.currentList[position] as Fixtures.Response)
+            is MatchResultViewHolder -> holder.bind(differ.currentList[position] as Matches.MatchesItem)
         }
     }
 
@@ -80,9 +80,9 @@ class LeagueRecyclerViewAdapter(
         init {
             _itemViewBinding.root.apply {
                 setOnClickListener {
-                    val matchId = (differ.currentList[layoutPosition] as Fixtures.Response).fixture?.id!!
-                    val season = (differ.currentList[layoutPosition] as Fixtures.Response).league?.season!!
-                    val leagueId = (differ.currentList[layoutPosition] as Fixtures.Response).league?.id!!
+                    val matchId = (differ.currentList[layoutPosition] as Matches.MatchesItem).id!!
+                    val season = (differ.currentList[layoutPosition] as Matches.MatchesItem).seasonId!!
+                    val leagueId = (differ.currentList[layoutPosition] as Matches.MatchesItem).leagueId!!
                     val bundle = Bundle().apply {
                         putInt("matchId", matchId)
                         putInt("season", season)
@@ -128,7 +128,7 @@ class LeagueRecyclerViewAdapter(
             }
         }
 
-        fun bind(item: Fixtures.Response) {
+        fun bind(item: Matches.MatchesItem) {
             _itemViewBinding.match = item
             _itemViewBinding.notificationsCheck.setOnCheckedChangeListener { _, isChecked ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -159,22 +159,22 @@ class LeagueRecyclerViewAdapter(
                 }
             }
             _itemViewBinding.notificationsCheck.visibility =
-                if (item.fixture?.status?.short?.equals("NS")!!) View.VISIBLE
+                if (item.status?.type == "upcoming") View.VISIBLE
                 else View.GONE
             _itemViewBinding.notificationsCheck.isChecked =
-                Shared.SAVED_MATCHES_NOTIFICATIONS_IDS.contains(item.fixture.id)
+                Shared.SAVED_MATCHES_NOTIFICATIONS_IDS.contains(item.id)
         }
     }
 
     interface OnCheckedChangeListener {
         fun onCheckChange(
-            fixture: Fixtures.Response,
+            fixture: Matches.MatchesItem,
             isChecked: Boolean,
             action: String
         )
 
         fun checkNotificationPermission(
-            fixture: Fixtures.Response,
+            fixture: Matches.MatchesItem,
             isChecked: Boolean,
         ): Boolean
     }

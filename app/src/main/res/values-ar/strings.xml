@@ -70,4 +70,5 @@
     <string name="sync_settings_summery">"عند تشغيل خيار المزامنة، سيتم تحميل أي تغييرات تجريها إلى السحابة حتى تتمكن من استيراد إعدادات التطبيق في أي وقت لاحق "</string>
     <string name="import_settings">"استيراد الإعدادات من السحابة "</string>
     <string name="no_live_matches">لا يوجد مباريات مباشرة حاليا</string>
+    <string name="all_data_has_been_fetched">تم جلب جميع البيانات</string>
 </resources>

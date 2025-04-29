@@ -7,42 +7,54 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.dev.goalpulse.R
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.dev.goalpulse.models.football.Fixtures
+import com.dev.goalpulse.models.football.Matches
 
 @BindingAdapter("match")
-fun scoreBinding(textView: TextView, match: Fixtures.Response) {
-    val homeScore = match.goals?.home
-    val awayScore = match.goals?.away
+fun scoreBinding(textView: TextView, match: Matches.MatchesItem) {
+    val homeScore = match.homeTeamScore?.display
+    val awayScore = match.awayTeamScore?.display
     val stringBuilder = StringBuilder().apply {
         append(homeScore)
         append(" - ")
         append(awayScore)
     }.toString()
-    // if match is live
-    when (match.fixture?.status?.short) {
-        "1H", "2H", "HT", "ET", "BT", "P", "INT" -> {
-            textView.apply {
-                text = stringBuilder
-                background = ResourcesCompat.getDrawable(resources, R.drawable.live_score_background, null)
-            }
-//        textView.text = "${match.fixture.status.long}\n${match.goals?.home}-" +
-//                "${match.goals?.away}"
-        }
-        // if match is finished
-        "FT", "AET", "PEN" -> {
-            textView.apply {
-                text = stringBuilder
-            }
-        }
-        // if match is canceled for any reason
-        "CANC", "PST", "TBD" -> {
-            textView.text = match.fixture.status.long
-        }
-        // if match is scheduled
-        else -> {
+    when (match.statusType) {
+        "upcoming" ->
             textView.text = if(DateTimeUtils.timeFormat == "12 HS")
-                match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo12HS(it) }
-            else match.fixture?.date?.let { DateTimeUtils.convertTimeFormatTo24HS(it) }
+                match.startTime?.let { DateTimeUtils.convertTimeFormatTo12HS(it) }
+            else match.startTime?.let { DateTimeUtils.convertTimeFormatTo24HS(it) }
+
+        "finished" -> textView.apply {
+            text = stringBuilder
+        }
+
+        "live" -> textView.apply {
+            text = stringBuilder
+            background = ResourcesCompat.getDrawable(resources, R.drawable.live_score_background, null)
+        }
+
+        "postponed" -> textView.apply {
+            text = match.status?.reason
+        }
+
+        "canceled" -> textView.apply {
+            text = match.status?.reason
+        }
+
+        "delayed" -> textView.apply {
+            text = match.status?.reason
+        }
+
+        "endure" -> textView.apply {
+            text = match.status?.reason
+        }
+
+        "interrupted" -> textView.apply {
+            text = match.status?.reason
+        }
+
+        "suspended" -> textView.apply {
+            text = match.status?.reason
         }
     }
 }
@@ -58,9 +70,12 @@ fun TextView.card(card: String?) {
 
 // league_match_result_item.xml
 @BindingAdapter("url")
-fun ImageView.imageBinding(imageUrl: String?) =
+fun ImageView.imageBinding(hashImage: String?) {
+    val imageUrl = "https://images.sportdevs.com/${hashImage}.png"
+
     Glide.with(this.context).load(imageUrl).circleCrop().placeholder(R.drawable.ic_football)
         .into(this)
+}
 
 // article_item.xml
 @BindingAdapter("url2")
