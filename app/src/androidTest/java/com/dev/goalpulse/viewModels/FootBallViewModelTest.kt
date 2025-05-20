@@ -1,4 +1,4 @@
-//package com.dev.goalpulse.viewModels
+package com.dev.goalpulse.viewModels
 //
 //import com.dev.goalpulse.Shared
 //import com.dev.goalpulse.api.FootballApi

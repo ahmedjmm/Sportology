@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.dev.goalpulse.R
+import com.dev.goalpulse.databinding.FiltersBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -25,8 +26,6 @@ import com.dev.goalpulse.viewModels.NewsViewModel
 import com.dev.goalpulse.views.activities.HomeActivity
 import com.dev.goalpulse.views.adapters.newsAdapters.NewsViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.filters_bottom_sheet.title_chip
-import kotlinx.android.synthetic.main.filters_bottom_sheet.toolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,9 +40,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     private lateinit var tabLayout: TabLayout
     private lateinit var fullScreenBottomSheetView: View
     private val bottomSheet: BottomSheetDialog by lazy { BottomSheetDialog(requireContext()) }
-    private lateinit var newsViewModel: NewsViewModel
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+    private var _filtersBottomSheetBinding: FiltersBottomSheetBinding? = null
+
+    private lateinit var newsViewModel: NewsViewModel
 
     var currentSelectedTab = 0
 
@@ -57,10 +58,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_news, container, false)
+        return FiltersBottomSheetBinding.inflate(inflater, container, false).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +70,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         initializeViews()
         setupViewPagerAndTabs()
         setupSearchBar()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _filtersBottomSheetBinding = null
     }
 
     private fun setupSearchBar() {
@@ -130,7 +137,7 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         fullScreenBottomSheetView =
             LayoutInflater.from(requireContext()).inflate(R.layout.filters_bottom_sheet, null)
         bottomSheet.setContentView(fullScreenBottomSheetView)
-        bottomSheet.toolbar.setNavigationOnClickListener { bottomSheet.dismiss() }
+        _filtersBottomSheetBinding?.toolbar?.setNavigationOnClickListener { bottomSheet.dismiss() }
         bottomSheet.setCanceledOnTouchOutside(false)
         val behavior = BottomSheetBehavior.from(fullScreenBottomSheetView.parent as View)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -221,7 +228,7 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
                 newsViewModel.title, "", true)
             //make sure that at least one chi is selected
             if(!descriptionChip.isChecked && !contentChip.isChecked) {
-                title_chip.isChecked = true
+                _filtersBottomSheetBinding?.titleChip?.isChecked = true
                 newsViewModel.searchIn = newsViewModel.title
             }
             newsViewModel.removeSearchInExtraStrings()

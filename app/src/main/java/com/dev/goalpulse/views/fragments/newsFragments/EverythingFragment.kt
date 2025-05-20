@@ -18,14 +18,13 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.Shared
+import com.dev.goalpulse.databinding.ErrorLayoutBinding
 import com.dev.goalpulse.models.news.News
 import com.dev.goalpulse.viewModels.NewsViewModel
 import com.dev.goalpulse.views.activities.HomeActivity
 import com.dev.goalpulse.views.adapters.newsAdapters.ArticlesRecyclerViewAdapter
 import com.dev.goalpulse.views.viewsUtilities.ViewCrossFadeAnimation
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.error_layout.view.errorText
-import kotlinx.android.synthetic.main.error_layout.view.retry_button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,11 +36,13 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
     private lateinit var fullScreenBottomSheetView: View
     private lateinit var toolbar: MaterialToolbar
     private lateinit var webView: WebView
-    private lateinit var errorLayout: View
     private lateinit var fragmentProgressIndicator: CircularProgressIndicator
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressIndicator: LinearProgressIndicator
     private lateinit var webViewClient: WebViewClient
+    private lateinit var _errorLayoutBinding: ErrorLayoutBinding
+
+
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -53,6 +54,8 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
         newsViewModel = (activity as HomeActivity).newsViewModel
         lifecycleScope.launch(Dispatchers.IO) { newsViewModel.getEveryThingNews() }
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -90,12 +93,12 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
     private fun handleLoadingState() {
         showViewWithAnimation(fragmentProgressIndicator)
         hideViewWithAnimation(recyclerView)
-        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(_errorLayoutBinding.root)
     }
 
     private fun handleErrorResponse(errorMessage: String) {
-        errorLayout.errorText.text = errorMessage
-        errorLayout.retry_button.setOnClickListener {
+        _errorLayoutBinding.errorText.text = errorMessage
+        _errorLayoutBinding.retryButton.setOnClickListener {
             if (Shared.isConnected)
                 lifecycleScope.launch(Dispatchers.IO) {
                     newsViewModel.getEveryThingNews()
@@ -104,7 +107,7 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
         }
         hideViewWithAnimation(fragmentProgressIndicator)
         hideViewWithAnimation(recyclerView)
-        showViewWithAnimation(errorLayout)
+        showViewWithAnimation(_errorLayoutBinding.root)
     }
 
     private fun handleSuccessResponse(articles: List<News.Article?>?) {
@@ -117,12 +120,11 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
             showViewWithAnimation(this)
         }
         hideViewWithAnimation(fragmentProgressIndicator)
-        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(_errorLayoutBinding.root)
     }
 
     private fun initializeFragmentViews(view: View) {
         fragmentProgressIndicator = view.findViewById(R.id.circularProgressIndicator)
-        errorLayout = view.findViewById(R.id.error_layout)
         recyclerView = view.findViewById(R.id.recycler_view)
     }
 
@@ -140,7 +142,8 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_articles, container, false)
+        _errorLayoutBinding = ErrorLayoutBinding.inflate(inflater, container, false)
+        return _errorLayoutBinding.root
     }
 
     override fun onItemClick(item: News.Article) {

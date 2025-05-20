@@ -66,7 +66,7 @@ class NewsViewModel @Inject constructor(
     var q: String = "football"
 
 
-    suspend fun getEveryThingNews() = viewModelScope.launch(Dispatchers.IO) {
+    fun getEveryThingNews() = viewModelScope.launch(Dispatchers.IO) {
         _everyThingMutableLiveData.postValue(ResponseState.Loading())
         try {
             val response = remoteRepository.getEveryThingNews(
@@ -87,7 +87,7 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    suspend fun getTopHeadlinesNews() = viewModelScope.launch(Dispatchers.IO) {
+    fun getTopHeadlinesNews() = viewModelScope.launch(Dispatchers.IO) {
         _topHeadlinesMutableLiveData.postValue(ResponseState.Loading())
         try {
             val response = remoteRepository.getTopHeadLinesNews(language = language)

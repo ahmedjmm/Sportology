@@ -28,6 +28,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.Shared
+import com.dev.goalpulse.databinding.ErrorLayoutBinding
 import com.dev.goalpulse.models.football.LeagueRoom
 import com.dev.goalpulse.models.football.LeagueSearchResult
 import com.dev.goalpulse.models.football.Team
@@ -40,8 +41,6 @@ import com.dev.goalpulse.viewModels.MyViewModelProvider
 import com.dev.goalpulse.viewModels.SearchActivityViewModel
 import com.dev.goalpulse.views.viewsUtilities.imageBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.error_layout.view.errorText
-import kotlinx.android.synthetic.main.error_layout.view.retry_button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -73,6 +72,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
     private lateinit var teamsLayout: RelativeLayout
     private lateinit var leaguesTitle: TextView
     private lateinit var teamsTitle: TextView
+    private lateinit var errorLayoutBinding: ErrorLayoutBinding
 
     private val viewModel by lazy {
         ViewModelProvider(
@@ -125,12 +125,12 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     showView(leaguesLayout)
                     leaguesError.apply {
                         showView(this)
-                        retry_button.setOnClickListener {
+                        errorLayoutBinding.retryButton.setOnClickListener {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 viewModel.searchLeague(myQuery)
                             }
                         }
-                        errorText.text = responseState.message
+                        errorLayoutBinding.errorText.text = responseState.message
                     }
                 }
             }
@@ -155,12 +155,12 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     showView(teamsLayout)
                     teamsError.apply {
                         showView(this)
-                        retry_button.setOnClickListener {
+                        errorLayoutBinding.retryButton.setOnClickListener {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 viewModel.searchTeam(myQuery)
                             }
                         }
-                        errorText.text = responseState.message
+                        errorLayoutBinding.errorText.text = responseState.message
                     }
                 }
             }

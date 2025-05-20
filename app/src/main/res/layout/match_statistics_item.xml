@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="statistic"
+            type="com.dev.goalpulse.models.football.MatchStatistics.MatchStatisticsItem.Statistic" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/texts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/home_statistic_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/home_text_background"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{statistic.homeTeam}"/>
+
+            <LinearLayout
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/statistics_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:text="@{statistic.type}"/>
+
+                <TextView
+                    android:id="@+id/statistics_period"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:text="@{statistic.period}"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/away_statistic_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/away_text_background"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{statistic.awayTeam}"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progress_home"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="2.5dp"
+                android:rotation="180"
+                app:indicatorColor="@color/holo_green_light"
+                app:trackColor="@color/AntiqueWhite"
+                app:progressValue="@{statistic.homeProgressbarCurrentValue}"
+                app:maxValue="@{statistic.homeProgressbarMaxValue}"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progress_away"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginStart="2.5dp"
+                android:layout_height="match_parent"
+                app:indicatorColor="@color/LightSlateGray"
+                app:trackColor="@color/AntiqueWhite"
+                app:progressValue="@{statistic.awayProgressbarCurrentValue}"
+                app:maxValue="@{statistic.awayProgressbarMaxValue}"/>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

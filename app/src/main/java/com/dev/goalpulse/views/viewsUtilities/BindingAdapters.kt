@@ -8,6 +8,10 @@ import com.bumptech.glide.Glide
 import com.dev.goalpulse.R
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.dev.goalpulse.models.football.Matches
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.LineData
+import com.google.android.material.progressindicator.LinearProgressIndicator
 
 @BindingAdapter("match")
 fun scoreBinding(textView: TextView, match: Matches.MatchesItem) {
@@ -83,9 +87,8 @@ fun ImageView.squareImageBinding(imageUrl: String?) =
     Glide.with(this.context).load(imageUrl).placeholder(R.drawable.ic_football)
         .into(this)
 
-@BindingAdapter("possession")
-fun CircularProgressIndicator.possessionBinding(progress: String) {
-    var myProgress: String? = null
-    if(progress.contains("%")) myProgress = progress.replace("%", "")
-    this.progress = myProgress?.let { Integer.valueOf(it) }?: 0
+@BindingAdapter("progressValue", "maxValue")
+fun setProgress(progressBar: LinearProgressIndicator, current: Int, max: Int) {
+    progressBar.max = max
+    progressBar.progress = current
 }

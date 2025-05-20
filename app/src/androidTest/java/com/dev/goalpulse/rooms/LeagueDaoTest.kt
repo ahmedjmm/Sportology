@@ -25,7 +25,7 @@ class LeagueDaoTest {
 
 //    @Inject
 //    @Named("db_test")
-    lateinit var database: AppDatabase
+    private lateinit var database: AppDatabase
     private lateinit var leagueDao: LeagueDao
 
     @Before

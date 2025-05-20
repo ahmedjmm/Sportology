@@ -1,6 +1,5 @@
 package com.dev.goalpulse.views.activities
 
-import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -17,16 +16,15 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navArgs
 import com.dev.goalpulse.R
 import com.dev.goalpulse.databinding.ActivityMatchDetailsBinding
-import com.dev.goalpulse.views.fragments.matchDetailsFragments.LeagueStandingsFragmentDirections
-import com.dev.goalpulse.views.fragments.matchDetailsFragments.MatchLineupsFragmentDirections
-import com.dev.goalpulse.views.fragments.matchDetailsFragments.MatchStatsFragmentDirections
+import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
+import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
 import com.google.android.material.snackbar.Snackbar
-import com.dev.goalpulse.ResponseState
+import com.dev.goalpulse.models.football.Matches
 import com.dev.goalpulse.repositories.RemoteRepository
-import com.dev.goalpulse.views.viewsUtilities.DateTimeUtils
 import com.dev.goalpulse.servicesAndUtilities.NetworkConnectivityReceiver
 import com.dev.goalpulse.viewModels.MatchDetailsViewModel
 import com.dev.goalpulse.viewModels.MyViewModelProvider
+import com.dev.goalpulse.views.fragments.matchDetails.MatchStatisticsFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,11 +41,15 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
     lateinit var remoteRepository: RemoteRepository
     @Inject
     lateinit var sharedPreferences: SharedPreferences
-    private lateinit var binding: ActivityMatchDetailsBinding
+    private lateinit var _binding: ActivityMatchDetailsBinding
+
     private lateinit var snackBar: Snackbar
     private lateinit var navController: NavController
     private lateinit var action: NavDirections
-    val args: MatchDetailsActivityArgs? by navArgs()
+    private val args: MatchDetailsActivityArgs? by navArgs()
+
+    private lateinit var match: Matches.MatchesItem
+
     val viewModel by lazy {
         ViewModelProvider(
             this, MyViewModelProvider(
@@ -58,18 +60,17 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
+        _binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
 
-        intent?.let {
-            getFixtureById(it)
-            lifecycleScope.launch(Dispatchers.IO) { getStandings(it) }
-        }?: run {
-            getFixtureById(args)
-            lifecycleScope.launch(Dispatchers.IO) { getStandings(args) }
+        this.match = args!!.match
+        _binding.matchDetails = this.match
+        getMatchStatistics()
+        this.match.graphsId?.let {
+            getMatchGraphs()
         }
 
         snackBar = Snackbar.make(
-            binding.motionLayout,
+            _binding.motionLayout,
             this.resources.getString(R.string.unable_to_connect),
             Snackbar.LENGTH_INDEFINITE
         )
@@ -78,124 +79,112 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         }
 
         navController =
-            binding.matchDetailsLayout.navHostFragment.getFragment<NavHostFragment>().navController
+            _binding.matchDetailsLayout.navHostFragment.getFragment<NavHostFragment>().navController
 
-        binding.stats.setOnClickListener {
-            if (navController.currentDestination?.displayName.equals(
-                    "com.dev.goalpulse:id/matchLineupsFragment")
-            ) {
+        _binding.stats.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                getMatchStatistics()
+                args?.match?.graphsId?.let {
+                    getMatchGraphs()
+                }
+            }
+            if (navController.currentDestination?.id == R.id.matchLineupsFragment) {
                 action =
-                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStatsFragment()
+                    MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStatsFragment()
                 startFragment(action)
-            } else if (navController.currentDestination?.displayName.equals(
-                    "com.dev.goalpulse:id/matchStandingsFragment"
-                )
-            ) {
+            } else if (navController.currentDestination?.id == R.id.matchStandingsFragment) {
                 action =
-                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchStatsFragment()
+                    LeagueStandingFragmentDirections.actionMatchStandingsFragmentToMatchStatsFragment()
                 startFragment(action)
             }
         }
-        binding.lineups.setOnClickListener {
+
+        _binding.lineups.setOnClickListener {
             showMenu(it)
         }
-        binding.standing.setOnClickListener {
-            if (navController.currentDestination?.displayName.equals(
-                    "com.dev.goalpulse:id/matchStatsFragment"
-                )
-            ) {
+
+        _binding.standing.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) { getStandings() }
+            if (navController.currentDestination?.id == R.id.matchStatsFragment) {
                 action =
-                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchStandingsFragment()
+                    MatchStatisticsFragmentDirections.actionMatchStatsFragmentToMatchStandingsFragment()
                 startFragment(action)
-            } else if (navController.currentDestination?.displayName.equals(
-                    "com.dev.goalpulse:id/matchLineupsFragment"
-                )
-            ) {
+            } else if (navController.currentDestination?.id == R.id.matchLineupsFragment) {
                 action =
-                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStandingsFragment()
+                    MatchLineupsFragmentDirections.actionMatchLineupsFragmentToMatchStandingsFragment()
                 startFragment(action)
             }
         }
 
-        viewModel.fixtureByIdLiveData.observe(this) { responseState ->
-            when(responseState) {
-                is ResponseState.Success -> {
-                    binding.matchDetails = responseState.data
-                    binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
-                            date -> DateTimeUtils.formatDateTime(date)
-                    }
-                    binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
-                    binding.score.text = responseState.data?.response?.get(0)?.goals?.home.toString() + " - " +
-                            responseState.data?.response?.get(0)?.goals?.away.toString()
-                }
-                is ResponseState.Error -> {
-                    binding.matchDetails = responseState.data
-                    binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
-                            date -> DateTimeUtils.formatDateTime(date)
-                    }
-                    binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
-                }
-                is ResponseState.Loading -> {}
-            }
-        }
+//        viewModel.matchStatisticsLiveData.observe(this) { responseState ->
+//            when(responseState) {
+//                is ResponseState.Success -> {
+//                    _binding.matchDetails = responseState.data
+//                    _binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
+//                            date -> DateTimeUtils.formatDateTime(date)
+//                    }
+//                    _binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
+//                    _binding.score.text = responseState.data?.response?.get(0)?.goals?.home.toString() + " - " +
+//                            responseState.data?.response?.get(0)?.goals?.away.toString()
+//                }
+//                is ResponseState.Error -> {
+//                    _binding.matchDetails = responseState.data
+//                    _binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
+//                            date -> DateTimeUtils.formatDateTime(date)
+//                    }
+//                    _binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
+//                }
+//                is ResponseState.Loading -> {}
+//            }
+//        }
     }
 
     private fun startFragment(action: NavDirections) {
-        binding.matchDetailsLayout.navHostFragment.findNavController().navigate(action)
+        _binding.matchDetailsLayout.navHostFragment.findNavController().navigate(action)
     }
 
     private fun prepareLineupsFragment(id: Int) {
         when (id) {
             R.id.home_lineups -> {
-                if (navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchStatsFragment"
-                    )
-                ) {
-                    action =
-                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(
-                            R.id.home_lineups)
-                    startFragment(action)
-                } else if (navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchStandingsFragment"
-                    )
-                ) {
-                    action =
-                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(
-                            R.id.home_lineups)
-                    startFragment(action)
-                } else if(navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchLineupsFragment"
-                    )
-                ) {
-                    action =
-                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.home_lineups)
-                    startFragment(action)
+                when (navController.currentDestination?.id) {
+                    R.id.matchStatsFragment -> {
+                        action =
+                            MatchStatisticsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(
+                                R.id.home_lineups)
+                        startFragment(action)
+                    }
+                    R.id.matchStandingsFragment -> {
+                        action =
+                            LeagueStandingFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(
+                                R.id.home_lineups)
+                        startFragment(action)
+                    }
+                    R.id.matchLineupsFragment -> {
+                        action =
+                            MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.home_lineups)
+                        startFragment(action)
+                    }
                 }
             }
             R.id.away_lineups -> {
-                if (navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchStatsFragment"
-                    )
-                ) {
-                    action =
-                        MatchStatsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(
-                            R.id.away_lineups)
-                    startFragment(action)
-                } else if (navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchStandingsFragment"
-                    )
-                ) {
-                    action =
-                        LeagueStandingsFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(
-                            R.id.away_lineups)
-                    startFragment(action)
-                } else if(navController.currentDestination?.displayName.equals(
-                        "com.dev.goalpulse:id/matchLineupsFragment"
-                    )
-                ) {
-                    action =
-                        MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.away_lineups)
-                    startFragment(action)
+                when (navController.currentDestination?.id) {
+                    R.id.matchStatsFragment -> {
+                        action =
+                            MatchStatisticsFragmentDirections.actionMatchStatsFragmentToMatchLineupsFragment(
+                                R.id.away_lineups)
+                        startFragment(action)
+                    }
+                    R.id.matchStandingsFragment -> {
+                        action =
+                            LeagueStandingFragmentDirections.actionMatchStandingsFragmentToMatchLineupsFragment(
+                                R.id.away_lineups)
+                        startFragment(action)
+                    }
+                    R.id.matchLineupsFragment -> {
+                        action =
+                            MatchLineupsFragmentDirections.actionMatchLineupsFragmentSelf2(R.id.away_lineups)
+                        startFragment(action)
+                    }
                 }
             }
         }
@@ -234,38 +223,36 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         else snackBar.dismiss()
     }
 
-    suspend fun getStandings(args: Any?) {
+    fun getStandings() {
         args?.let {
-            if(it is Intent) {
-                viewModel.getStandings(
-                    season = it.getIntExtra("season", 2023),
-                    leagueId = it.getIntExtra("leagueId", 135),
-                )
-            }
-            else if (it is MatchDetailsActivityArgs) {
-                viewModel.getStandings(
-                    season = it.season,
-                    leagueId = it.leagueId
-                )
-            }
-            else {}
+            val seasonId = it.match.seasonId!!
+            val stringSeasonId = viewModel.convertArgumentFromIntToString(seasonId)
+            viewModel.getStandings(season = stringSeasonId)
         }
     }
 
-    fun getFixtureById(args: Any?) {
+    fun getMatchStatistics() {
         args?.let {
-            if(it is Intent) {
-                viewModel.getFixtureById(
-                    timeZone = sharedPreferences.getString("time_zone", "Asia/Dubai")!!,
-                    fixtureId = it.getIntExtra("matchId", 867946),
-                )
-            }
-            else if (it is MatchDetailsActivityArgs) {
-                viewModel.getFixtureById(
-                    timeZone = sharedPreferences.getString("time_zone", "Asia/Dubai")!!,
-                    fixtureId = it.matchId,
-                )
-            }
+            val matchId = it.match.id!!
+            val stringMatchId = viewModel.convertArgumentFromIntToString(matchId)
+            viewModel.getMatchStatistics(matchId = stringMatchId)
+        }
+    }
+
+    private fun getMatchGraphs() {
+        args?.let {
+            val graphId = it.match.graphsId!!
+            val stringGraphId = viewModel.convertArgumentFromIntToString(graphId)
+            viewModel.getMatchGraphs(graphId = stringGraphId)
+        }
+
+    }
+
+    fun getMatchPositions() {
+        args?.let {
+            val matchPositionsId = it.match.id!!
+            val stringMatchId = viewModel.convertArgumentFromIntToString(matchPositionsId)
+            viewModel.getMatchPlayerPositions(matchId = stringMatchId)
         }
     }
 }

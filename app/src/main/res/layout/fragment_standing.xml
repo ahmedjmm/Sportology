@@ -23,69 +23,69 @@
                 android:layout_height="wrap_content"
                 android:divider="@drawable/row_divider"
                 android:showDividers="middle"
+                android:gravity="center"
                 android:animateLayoutChanges="true">
                 <TableRow>
-                    <Space
+                    <View
                         android:id="@+id/team_rank"
                         android:layout_width="30dp"
                         android:layout_height="20dp"/>
 
-                    <Space
+                    <View
                         android:layout_width="50dp"
                         android:layout_height="20dp"/>
 
                     <TextView
                         android:text="@string/team"
-                        android:gravity="center"
                         android:layout_width="100dp"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
 
                     <TextView
                         android:text="@string/points"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
+
+                    <TextView
+                        android:text="@string/goal_for"
                         android:gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
-                        android:text="@string/for_against"
+                        android:text="@string/goal_against"
                         android:gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
-
                     <TextView
                         android:text="@string/goal_diff"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
                         android:text="@string/played"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
                         android:text="@string/win"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
                         android:text="@string/draw"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
                         android:text="@string/lose"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:layout_width="50dp"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:text="@string/formation"
-                        android:gravity="center"
-                        android:layout_width="@dimen/form_layout_width"
                         android:layout_height="wrap_content"/>
                 </TableRow>
             </TableLayout>

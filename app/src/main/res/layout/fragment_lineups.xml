@@ -29,6 +29,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:contentDescription="@null"
                     android:padding="5dp"/>
                 <TextView
                     android:id="@+id/coach_name"
@@ -48,6 +49,7 @@
                 android:layout_height="500dp">
 
                 <com.dev.goalpulse.views.FootballFieldView
+                    android:id="@+id/Football_field_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">

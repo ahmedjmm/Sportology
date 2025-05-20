@@ -2,7 +2,9 @@ package com.dev.goalpulse.views.fragments.bottomNav
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,11 +71,12 @@ class FootBallFragment : Fragment(R.layout.fragment_football) {
 
         footBallViewModel.leaguesLiveData.observe(viewLifecycleOwner) {
             it.forEach { league ->
+                Log.i("leaguesLiveData", league.toString())
                 TabItemBinding.inflate(layoutInflater).apply {
                     this.league = league[0]
                     val tab = tabLayout.newTab().setCustomView(this.root)
                     val leagueLogoString = "https://images.sportdevs.com/${league[0].hashImage}.png"
-                    Glide.with(this@FootBallFragment).load(leagueLogoString).into(leagueLogo);
+                    Glide.with(this@FootBallFragment).load(leagueLogoString).into(leagueLogo)
                     tabLayout.addTab(tab)
                     val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in)
                     tab.customView?.startAnimation(animation)

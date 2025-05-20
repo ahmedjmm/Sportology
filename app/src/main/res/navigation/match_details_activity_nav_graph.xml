@@ -4,7 +4,7 @@
     app:startDestination="@id/matchStatsFragment">
     <fragment
         android:id="@+id/matchLineupsFragment"
-        android:name="com.dev.goalpulse.views.fragments.matchDetailsFragments.MatchLineupsFragment"
+        android:name="com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragment"
         android:label="MatchLineupsFragment" >
         <action
             android:id="@+id/action_matchLineupsFragment_to_matchStandingsFragment"
@@ -22,13 +22,13 @@
             app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right" />
         <argument
-            android:name="teamLineups"
+            android:name="teamPositions"
             app:argType="integer" />
     </fragment>
 
     <fragment
         android:id="@+id/matchStandingsFragment"
-        android:name="com.dev.goalpulse.views.fragments.matchDetailsFragments.LeagueStandingsFragment"
+        android:name="com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragment"
         android:label="MatchStandingsFragment" >
         <action
             android:id="@+id/action_matchStandingsFragment_to_matchLineupsFragment"
@@ -44,7 +44,7 @@
 
     <fragment
         android:id="@+id/matchStatsFragment"
-        android:name="com.dev.goalpulse.views.fragments.matchDetailsFragments.MatchStatsFragment"
+        android:name="com.dev.goalpulse.views.fragments.matchDetails.MatchStatisticsFragment"
         android:label="MatchStatsFragment" >
         <action
             android:id="@+id/action_matchStatsFragment_to_matchLineupsFragment"
@@ -55,6 +55,6 @@
             android:id="@+id/action_matchStatsFragment_to_matchStandingsFragment"
             app:destination="@id/matchStandingsFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"/>
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
 </navigation>

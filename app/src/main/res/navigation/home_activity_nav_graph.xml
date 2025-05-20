@@ -33,13 +33,7 @@
         android:label="MatchDetailsActivity"
         tools:layout="@layout/activity_home">
         <argument
-            android:name="matchId"
-            app:argType="integer" />
-        <argument
-            android:name="season"
-            app:argType="integer" />
-        <argument
-            android:name="leagueId"
-            app:argType="integer" />
+            android:name="match"
+            app:argType="com.dev.goalpulse.models.football.Matches$MatchesItem" />
     </activity>
 </navigation>

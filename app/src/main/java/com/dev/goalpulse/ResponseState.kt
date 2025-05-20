@@ -9,7 +9,7 @@ sealed class ResponseState<T>(
     val data: T? = null,
     val message: String? = null
 ) {
-    class Success<T>(data: T, message: String? = null): ResponseState<T>(data, message)
+    class Success<T>(data: T?, message: String? = null): ResponseState<T>(data, message)
     class Error<T>(message: String, data: T? = null): ResponseState<T>(data, message)
     class Loading<T>: ResponseState<T>()
 }
@@ -20,11 +20,9 @@ object ApiResponseHandler {
     ): ResponseState<T> {
         return try {
             val response = call()
-
+            Log.i("originalResponse", response.body().toString())
             if (response.isSuccessful) {
-                response.body()?.let { body ->
-                    ResponseState.Success(body)
-                } ?: ResponseState.Error("Empty response body")
+                ResponseState.Success(response.body())
             } else {
                 // Get the raw error response as string first
                 val errorBodyString = response.errorBody()?.string() ?: ""
@@ -46,6 +44,7 @@ object ApiResponseHandler {
                 ResponseState.Error(errorMessage)
             }
         } catch (e: Exception) {
+            Log.i("originalResponse", e.message ?: "Unknown error")
             ResponseState.Error(e.message ?: "Unknown error")
         }
     }

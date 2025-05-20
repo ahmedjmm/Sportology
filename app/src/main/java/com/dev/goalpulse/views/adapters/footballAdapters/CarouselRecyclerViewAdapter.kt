@@ -14,9 +14,6 @@ import com.dev.goalpulse.R
 import com.dev.goalpulse.databinding.FavouriteItemBinding
 import com.dev.goalpulse.models.football.LeagueRoom
 import com.dev.goalpulse.models.football.Team
-import kotlinx.android.synthetic.main.favourite_item.view.coach_name
-import kotlinx.android.synthetic.main.favourite_item.view.constraint_layout
-import kotlinx.android.synthetic.main.favourite_item.view.item_name
 
 class CarouselRecyclerViewAdapter(
     private val favourites: List<Any>,
@@ -32,7 +29,7 @@ class CarouselRecyclerViewAdapter(
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                         Palette.from(resource).generate { palette ->
                             palette?.vibrantSwatch?.rgb?.let { rgb ->
-                                itemView.constraint_layout.setBackgroundColor(rgb)
+                                favouriteItemBinding.constraintLayout.setBackgroundColor(rgb)
                             }
                         }
                     }
@@ -42,7 +39,7 @@ class CarouselRecyclerViewAdapter(
                     }
                 })
             Glide.with(itemView.context).load(league.logo).into(itemView.findViewById(R.id.logo))
-            itemView.item_name.text = league.name
+            favouriteItemBinding.itemName.text = league.name
 //            itemView.item_winner.text = league.country
         }
 
@@ -52,7 +49,7 @@ class CarouselRecyclerViewAdapter(
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                         Palette.from(resource).generate { palette ->
                             palette?.vibrantSwatch?.rgb?.let { rgb ->
-                                itemView.constraint_layout.setBackgroundColor(rgb)
+                                favouriteItemBinding.constraintLayout.setBackgroundColor(rgb)
                             }
                         }
                     }
@@ -62,8 +59,8 @@ class CarouselRecyclerViewAdapter(
                     }
                 })
             Glide.with(itemView.context).load(team.logo).into(itemView.findViewById(R.id.logo))
-            itemView.item_name.text = team.name
-            itemView.coach_name.text = coachesNames?.get(position) ?: "not provided"
+            favouriteItemBinding.itemName.text = team.name
+            favouriteItemBinding.coachName.text = coachesNames?.get(position) ?: "not provided"
         }
     }
 

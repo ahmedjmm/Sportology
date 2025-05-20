@@ -16,6 +16,7 @@ import com.dev.goalpulse.Shared
 import com.dev.goalpulse.api.FootballApi
 import com.dev.goalpulse.api.NewsApi
 import com.dev.goalpulse.repositories.DefaultLocalRepository
+import com.dev.goalpulse.repositories.DataCache
 import com.dev.goalpulse.repositories.RemoteRepository
 import com.dev.goalpulse.rooms.AppDatabase
 import com.dev.goalpulse.rooms.LeagueDao
@@ -91,10 +92,18 @@ object SingletonModule {
         ).build()
     }
 
+    @Provides
+    @Singleton
+    fun provideMatchDataCache(): DataCache = DataCache()
+
     @Singleton
     @Provides
-    fun provideRemoteRepository(newsApi: NewsApi, footballApi: FootballApi) =
-        RemoteRepository(footballApi = footballApi, newsApi = newsApi)
+    fun provideRemoteRepository(newsApi: NewsApi, footballApi: FootballApi, cache: DataCache) =
+        RemoteRepository(
+            footballApi = footballApi,
+            newsApi = newsApi,
+            cache = cache
+        )
 
     @Singleton
     @Provides
