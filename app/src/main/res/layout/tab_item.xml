@@ -17,7 +17,8 @@
         <ImageView
             android:id="@+id/leagueLogo"
             android:layout_width="match_parent"
-            android:layout_height="25dp"/>
+            android:layout_height="25dp"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/leagueName"

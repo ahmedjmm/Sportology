@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.dev.goalpulse.models.news.News
+import androidx.core.net.toUri
 
 
 class WebViewClient(
@@ -33,7 +34,7 @@ class WebViewClient(
         fullScreenBottomSheetView.findViewById<MaterialToolbar>(R.id.toolbar).title = article.title
         fullScreenBottomSheetView.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(article.url)
+            intent.data = article.url?.toUri()
             try { context.startActivity(intent) }
             catch (exception: ActivityNotFoundException) {
                 Toast.makeText(context,

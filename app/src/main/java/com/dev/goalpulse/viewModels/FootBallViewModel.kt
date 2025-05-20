@@ -146,7 +146,6 @@ class FootBallViewModel @Inject constructor(
                 }
                 return@map ResponseState.Success(data = formatedMatchesData)
             }
-
             is ResponseState.Loading -> return@map ResponseState.Loading()
             is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
         }
@@ -198,24 +197,6 @@ class FootBallViewModel @Inject constructor(
                 is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
             }
         }
-
-//    private val _seasonsMutableLiveData = MutableLiveData<ResponseState<Seasons>>()
-//    val seasonsLiveData = _seasonsMutableLiveData.map { responseState ->
-//        when(responseState) {
-//            is ResponseState.Success -> {
-//                if(responseState.data?.isEmpty() == true)
-//                    return@map ResponseState.Error("No data")
-//
-//                val size = responseState.data?.get(0)?.seasons?.size!!
-//                val seasons = mutableListOf<Seasons.SeasonsItem.Season>()
-//                responseState.data[0].seasons?.get(0)?.let { seasons.add(it) }
-//                responseState.data[0].seasons?.get(size-1)?.let { seasons.add(it) }
-//                return@map ResponseState.Success(seasons)
-//            }
-//            is ResponseState.Loading -> return@map ResponseState.Loading()
-//            is ResponseState.Error -> return@map ResponseState.Error(responseState.message!!)
-//        }
-//    }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -337,7 +318,6 @@ class FootBallViewModel @Inject constructor(
                 }
             }
         }.join()
-
 
     private fun handleMatchesException(
         liveData: MutableLiveData<ResponseState<Matches>>,

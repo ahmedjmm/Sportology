@@ -31,7 +31,7 @@ class SearchActivityViewModel @Inject constructor(
     val teamSearchLiveData: LiveData<ResponseState<TeamSearchResult>> = _teamSearchMutableLiveData
     val leagueSearchLiveData: LiveData<ResponseState<LeagueSearchResult>> = _leagueSearchMutableLiveData
 
-    suspend fun searchTeam(query: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun searchTeam(query: String) = viewModelScope.launch(Dispatchers.IO) {
         if(Shared.isConnected) {
             _teamSearchMutableLiveData.postValue(ResponseState.Loading())
             try{
@@ -48,7 +48,7 @@ class SearchActivityViewModel @Inject constructor(
         else _teamSearchMutableLiveData.postValue(ResponseState.Error(app.getString(R.string.unable_to_connect)))
     }
 
-    suspend fun searchLeague(query: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun searchLeague(query: String) = viewModelScope.launch(Dispatchers.IO) {
         if(Shared.isConnected) {
             _leagueSearchMutableLiveData.postValue(ResponseState.Loading())
             try{

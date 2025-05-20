@@ -1,9 +1,12 @@
 package com.dev.goalpulse.models.football
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 class Matches : ArrayList<Matches.MatchesItem>(){
+    @Parcelize
     data class MatchesItem(
         @SerializedName("id")
         val id: Int?,
@@ -71,6 +74,8 @@ class Matches : ArrayList<Matches.MatchesItem>(){
         val seasonStatisticsType: String?,
         @SerializedName("lineups_id")
         val lineupsId: Int?,
+        @SerializedName("graphs_id")
+        val graphsId: Int?,
         @SerializedName("coaches_id")
         val coachesId: Int?,
         @SerializedName("class_id")
@@ -87,7 +92,8 @@ class Matches : ArrayList<Matches.MatchesItem>(){
         val leagueHashImage: String?,
         @SerializedName("last_period")
         val lastPeriod: String?
-    ) {
+    ) : Parcelable {
+        @Parcelize
         data class Round(
             @SerializedName("id")
             val id: Int?,
@@ -97,15 +103,17 @@ class Matches : ArrayList<Matches.MatchesItem>(){
             val endTime: String?,
             @SerializedName("start_time")
             val startTime: String?
-        )
-    
+        ) : Parcelable
+
+        @Parcelize
         data class Status(
             @SerializedName("type")
             val type: String?,
             @SerializedName("reason")
             val reason: String?
-        )
-    
+        ) : Parcelable
+
+        @Parcelize
         data class HomeTeamScore(
             @SerializedName("current")
             val current: Int?,
@@ -117,8 +125,9 @@ class Matches : ArrayList<Matches.MatchesItem>(){
             val period2: Int?,
             @SerializedName("default_time")
             val defaultTime: Int?
-        )
-    
+        ) : Parcelable
+
+        @Parcelize
         data class AwayTeamScore(
             @SerializedName("current")
             val current: Int?,
@@ -130,8 +139,9 @@ class Matches : ArrayList<Matches.MatchesItem>(){
             val period2: Int?,
             @SerializedName("default_time")
             val defaultTime: Int?
-        )
-    
+        ) : Parcelable
+
+        @Parcelize
         data class Times(
             @SerializedName("extend_time_1")
             val extendTime1: Int?,
@@ -139,8 +149,9 @@ class Matches : ArrayList<Matches.MatchesItem>(){
             val extendTime2: Int?,
             @SerializedName("specific_start_time")
             val specificStartTime: String?
-        )
-    
+        ) : Parcelable
+
+        @Parcelize
         data class Coaches(
             @SerializedName("away_coach_id")
             val awayCoachId: Int?,
@@ -154,6 +165,6 @@ class Matches : ArrayList<Matches.MatchesItem>(){
             val awayCoachHashImage: String?,
             @SerializedName("home_coach_hash_image")
             val homeCoachHashImage: String?
-        )
+        ) : Parcelable
     }
 }

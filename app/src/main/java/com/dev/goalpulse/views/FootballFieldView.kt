@@ -7,10 +7,14 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import com.dev.goalpulse.models.football.MatchPositions
 
 class FootballFieldView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val arcRadius = 70f
     private val sweepAngle = 90f
+
+    private var teamPositions: List<MatchPositions.MatchPositionsItem.Position?> = emptyList()
+
 
     private val fieldPaint = Paint().apply {
         color = Color.GREEN
@@ -28,9 +32,60 @@ class FootballFieldView(context: Context, attrs: AttributeSet) : View(context, a
         strokeWidth = 5f
     }
 
+    private val teamPaint = Paint().apply {
+        color = Color.RED
+        style = Paint.Style.FILL
+    }
+
+    private val playerTextPaint = Paint().apply {
+        color = Color.BLACK
+        textSize = 24f
+        textAlign = Paint.Align.CENTER
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawFootballField(canvas)
+        drawPlayers(canvas)
+    }
+
+    private fun drawPlayer(
+        canvas: Canvas?,
+        xPercent: Double,
+        yPercent: Double,
+        paint: Paint,
+        name: String?
+    ) {
+        val x = (width * xPercent / 100).toFloat()
+        val y = (height * yPercent / 100).toFloat()
+
+        // Draw player circle
+        canvas?.drawCircle(x, y, 20f, paint)
+
+        // Draw player name (first letter of first name + last name)
+        val displayName = name?.split(" ")?.let {
+            if (it.size > 1) "${it[0].first()}. ${it.last()}" else name
+        } ?: ""
+
+        canvas?.drawText(displayName, x, y - 25f, playerTextPaint)
+    }
+
+    private fun drawPlayers(canvas: Canvas?) {
+        // Draw team players
+        teamPositions.forEach { position ->
+            position!!.averageX?.let { x ->
+                position.averageY?.let { y ->
+                    drawPlayer(canvas, x, y, teamPaint, position.playerName)
+                }
+            }
+        }
+    }
+
+    fun setPlayerPositions(
+        teamPositions: List<MatchPositions.MatchPositionsItem.Position?>,
+        ) {
+        this.teamPositions = teamPositions
+        invalidate()
     }
 
     private fun drawFootballField(canvas: Canvas?) {

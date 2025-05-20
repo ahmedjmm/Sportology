@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,13 +81,10 @@ class LeagueMatchesRecyclerViewAdapter(
         init {
             _itemViewBinding.root.apply {
                 setOnClickListener {
-                    val matchId = (differ.currentList[layoutPosition] as Matches.MatchesItem).id!!
-                    val season = (differ.currentList[layoutPosition] as Matches.MatchesItem).seasonId!!
-                    val leagueId = (differ.currentList[layoutPosition] as Matches.MatchesItem).leagueId!!
+                    val matchItem = differ.currentList[layoutPosition] as Matches.MatchesItem
+                    Log.i("matchItem", "from differ ${matchItem.id}")
                     val bundle = Bundle().apply {
-                        putInt("matchId", matchId)
-                        putInt("season", season)
-                        putInt("leagueId", leagueId)
+                        putParcelable("match", matchItem)
                     }
                     findNavController().navigate(
                         R.id.action_football_to_matchDetailsActivity,

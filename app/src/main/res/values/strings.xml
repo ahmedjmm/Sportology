@@ -15,20 +15,17 @@
     <string name="standing">Standings</string>
 
     <!-- MatchStatsFragment strings -->
-    <string name="possession">Possession</string>
 
     <!-- MatchLineupsFragment (home and away) strings -->
     <string name="substitutions">Substitutions</string>
 
     <!-- LeagueStandingsFragment (home and away) strings -->
     <string name="played">P</string>
-    <string name="for_against">F/A</string>
     <string name="goal_diff" translatable="false">+/-</string>
     <string name="points">PTS</string>
     <string name="win">W</string>
     <string name="draw">D</string>
     <string name="lose">L</string>
-    <string name="formation">Form</string>
     <string name="team">Team</string>
 
     <!--  FootBallFragment strings  -->
@@ -116,4 +113,10 @@
     <string name="import_settings">Import settings from cloud</string>
     <string name="no_live_matches">No live matches currently</string>
     <string name="all_data_has_been_fetched">All data has been fetched.</string>
+    <string name="goal_for">Goal For</string>
+    <string name="goal_against">Goal Against</string>
+    <string name="article_image">Article image</string>
+    <string name="share">share</string>
+    <string name="Expand_more">expand more</string>
+    <string name="match_pressure_timeline">Match Pressure Timeline</string>
 </resources>

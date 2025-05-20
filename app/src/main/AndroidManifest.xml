@@ -31,7 +31,6 @@
             android:name="com.dev.goalpulse.views.activities.AllSearchResultsActivity"
             android:exported="false"
             android:label="@string/title_activity_all_search_results"
-            android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.Sportology" />
         <activity
             android:name="com.dev.goalpulse.views.activities.SearchableActivity"
@@ -49,7 +48,6 @@
             android:name="com.dev.goalpulse.views.activities.MatchDetailsActivity"
             android:exported="true"
             android:parentActivityName="com.dev.goalpulse.views.activities.HomeActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/matchDetailsActivityTheme">
             <meta-data
                 android:name="android.app.lib_name"
@@ -59,7 +57,8 @@
             android:name="com.dev.goalpulse.views.activities.HomeActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

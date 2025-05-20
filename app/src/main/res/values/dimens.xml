@@ -1,8 +1,4 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-
-    <!--  standings fragment dimensions  -->
-    <dimen name="formation_image_width">30dp</dimen>
 
     <dimen name="team_image_width">30dp</dimen>
     <dimen name="team_image_height">30dp</dimen>

@@ -7,7 +7,7 @@
     <data>
         <variable
             name="matchDetails"
-            type="com.dev.goalpulse.models.football.FixtureById" />
+            type="com.dev.goalpulse.models.football.Matches.MatchesItem" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
@@ -31,12 +31,12 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@null"
-            app:url="@{matchDetails.response.get(0).teams.home.logo}"
+            app:url="@{matchDetails.homeTeamHashImage}"
             tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/home_name"
-            android:text="@{matchDetails.response.get(0).teams.home.name}"
+            android:text="@{matchDetails.homeTeamName}"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="11sp"
@@ -56,10 +56,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            app:match="@{matchDetails}"/>
 
         <TextView
             android:id="@+id/status"
+            android:text="@{matchDetails.status.reason}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="5dp"
@@ -74,12 +76,12 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@null"
-            app:url="@{matchDetails.response.get(0).teams.away.logo}"
+            app:url="@{matchDetails.awayTeamHashImage}"
             tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/away_name"
-            android:text="@{matchDetails.response.get(0).teams.away.name}"
+            android:text="@{matchDetails.awayTeamName}"
             android:gravity="center"
             android:textSize="11sp"
             android:textColor="@color/white"
@@ -102,7 +104,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{matchDetails.response.get(0).fixture.referee}"
+                    android:text="@{matchDetails.refereeName}"
                     android:drawablePadding="5dp"
                     app:drawableLeftCompat="@drawable/football_whistle_of_referee" />
 
@@ -114,7 +116,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:text="@{matchDetails.response.get(0).fixture.venue.name + ',' + ' ' + matchDetails.response.get(0).fixture.venue.city}"
+                    android:text="@{matchDetails.arenaName}"
                     android:drawablePadding="5dp"
                     app:drawableLeftCompat="@drawable/stadium_icon" />
             </LinearLayout>

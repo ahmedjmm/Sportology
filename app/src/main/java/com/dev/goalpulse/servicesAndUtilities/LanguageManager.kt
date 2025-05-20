@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaFormat.KEY_LANGUAGE
 import java.util.Locale
+import androidx.core.content.edit
 
 
 class LanguageManager(
@@ -11,7 +12,7 @@ class LanguageManager(
     private val sharedPreferences: SharedPreferences
 ) {
     fun setCurrentLanguage(language: String) {
-        sharedPreferences.edit().putString(KEY_LANGUAGE, language).apply()
+        sharedPreferences.edit { putString(KEY_LANGUAGE, language) }
         updateAppLocale(language)
     }
 

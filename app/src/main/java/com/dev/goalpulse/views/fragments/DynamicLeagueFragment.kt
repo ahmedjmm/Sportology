@@ -23,6 +23,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.Shared
+import com.dev.goalpulse.databinding.ErrorLayoutBinding
 import com.dev.goalpulse.models.football.MatchNotificationRoom
 import com.dev.goalpulse.models.football.Matches
 import com.dev.goalpulse.views.viewsUtilities.DateTimeUtils
@@ -32,8 +33,6 @@ import com.dev.goalpulse.views.activities.HomeActivity
 import com.dev.goalpulse.views.adapters.footballAdapters.LeagueMatchesRecyclerViewAdapter
 import com.dev.goalpulse.views.viewsUtilities.ViewCrossFadeAnimation
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.error_layout.view.errorText
-import kotlinx.android.synthetic.main.error_layout.view.retry_button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,10 +43,11 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
     LeagueMatchesRecyclerViewAdapter.OnCheckedChangeListener, ViewCrossFadeAnimation {
     private lateinit var footBallViewModel: FootBallViewModel
 
+    private var _errorLayoutBinding: ErrorLayoutBinding? = null
     private lateinit var leagueRV: RecyclerView
     private lateinit var circularProgressIndicator: CircularProgressIndicator
     private lateinit var leagueMatchesRecyclerViewAdapter: LeagueMatchesRecyclerViewAdapter
-    private lateinit var errorLayout: View
+
     var leagueOrder = 0 //league order in the tab view
     private var offset = 0
     private var season = ""
@@ -180,8 +180,14 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _errorLayoutBinding = null
+    }
+
     private fun initializeViews(view: View) {
-        errorLayout = view.findViewById(R.id.error_layout)
+        val errorLayout = view.findViewById<View>(R.id.error_layout)
+        _errorLayoutBinding = ErrorLayoutBinding.bind(errorLayout)
         circularProgressIndicator = view.findViewById(R.id.circularProgressIndicator)
         leagueRV = view.findViewById(R.id.league_RV)
     }
@@ -189,15 +195,15 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
     private fun showMatchesUI(data: MutableList<Any>?, message: String?) {
         this.lastResponseMessage = message
         leagueMatchesRecyclerViewAdapter.differ.submitList(data)
-        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(_errorLayoutBinding!!.root)
         hideViewWithAnimation(circularProgressIndicator)
         showViewWithAnimation(leagueRV)
     }
 
     private fun showErrorUI(errorMessage: String) {
-        errorLayout.apply {
+        _errorLayoutBinding!!.apply {
             errorText.text = errorMessage
-            retry_button.setOnClickListener {
+            retryButton.setOnClickListener {
                 if(Shared.isConnected)
                     lifecycleScope.launch(Dispatchers.IO) {
                         try {
@@ -210,7 +216,7 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
                     }
                 else (requireActivity() as HomeActivity).snackBar.show()
             }
-            showViewWithAnimation(this)
+            showViewWithAnimation(this.root)
         }
         hideViewWithAnimation(circularProgressIndicator)
         hideViewWithAnimation(leagueRV)
@@ -218,7 +224,7 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
 
     private fun showLoadingUI() {
         showViewWithAnimation(circularProgressIndicator)
-        hideViewWithAnimation(errorLayout)
+        hideViewWithAnimation(_errorLayoutBinding!!.root)
         hideViewWithAnimation(leagueRV)
     }
 
@@ -244,7 +250,7 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
                                 this@DynamicLeagueFragment.offset += 50
                                 footBallViewModel.getLeagueMatches(
                                     leagueId = Shared.LEAGUES_IDS[leagueOrder],
-                                    seasonId = "eq.45769", ///////////////////////////////////// seasonId = this@DynamicLeagueFragment.season
+                                    seasonId = this@DynamicLeagueFragment.season,  //seasonId = "eq.45769",
                                     offset = this@DynamicLeagueFragment.offset.toString()
                                 )
                             }

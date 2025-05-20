@@ -9,15 +9,12 @@
     <string name="away_lineups">تشكيلة المصتضيف</string>
     <string name="home_lineups">تشكيلة المضيف</string>
     <string name="standing">الترتيب</string>
-    <string name="possession">الاستحواذ</string>
     <string name="substitutions">التبديلات</string>
     <string name="played">لعب</string>
-    <string name="for_against">فارق</string>
     <string name="points">نقاط</string>
     <string name="win">فوز</string>
     <string name="draw">تعادل</string>
     <string name="lose">خسارة</string>
-    <string name="formation">الخطة</string>
     <string name="team">الفريق</string>
     <string name="live">مباشر</string>
     <string name="pick_team">اختر فريقك المفضل</string>
@@ -71,4 +68,10 @@
     <string name="import_settings">"استيراد الإعدادات من السحابة "</string>
     <string name="no_live_matches">لا يوجد مباريات مباشرة حاليا</string>
     <string name="all_data_has_been_fetched">تم جلب جميع البيانات</string>
+    <string name="goal_for">هدف ل</string>
+    <string name="goal_against">هدف ضد</string>
+    <string name="article_image">صورة المقالة</string>
+    <string name="share">مشاركة</string>
+    <string name="Expand_more">توسيع</string>
+    <string name="match_pressure_timeline">الجدول الزمني للضغط</string>
 </resources>

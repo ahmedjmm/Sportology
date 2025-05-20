@@ -3,7 +3,6 @@ package com.dev.goalpulse.api
 import com.dev.goalpulse.models.football.*
 import com.dev.goalpulse.models.football.Coachs
 import com.dev.goalpulse.models.football.LeagueSearchResult
-import com.dev.goalpulse.models.football.Standings
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -31,19 +30,17 @@ interface FootballApi {
         leagueId: String
     ): Response<Seasons>
 
-    @GET("/fixtures")
-    suspend fun getMatchStatisticsById(
+    @GET("/matches-statistics")
+    suspend fun getMatchStatistics(
         @Query("match_id")
         matchId: String
-    ): Response<MatchStatisticsById>
+    ): Response<MatchStatistics>
 
     @GET("/standings")
     suspend fun getStandings(
-        @Query("league")
-        leagueId: Int,
-        @Query("season")
-        season: Int
-    ): Response<Standings>
+        @Query("season_id")
+        season: String
+    ): Response<Standing>
 
     @GET("/teams")
     suspend fun getTeamSearchResult(
@@ -62,4 +59,16 @@ interface FootballApi {
         @Query("team")
         teamId: Int
     ): Response<Coachs>
+
+    @GET("/matches-graphs")
+    suspend fun getMatchGraphs(
+        @Query("id")
+        graphId: String
+    ): Response<MatchGraphs>
+
+    @GET("/matches-positions")
+    suspend fun getMatchPlayersPositions(
+        @Query("match_id")
+        matchId: String
+    ): Response<MatchPositions>
 }
