@@ -61,13 +61,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return FiltersBottomSheetBinding.inflate(inflater, container, false).root
-    }
+    ): View = inflater.inflate(R.layout.fragment_news, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViews()
+        initializeViews(view)
         setupViewPagerAndTabs()
         setupSearchBar()
     }
@@ -240,7 +238,7 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
             if (isChecked) newsViewModel.searchIn += "," + newsViewModel.description + ","
             else newsViewModel.searchIn = newsViewModel.searchIn.replaceFirst(
                 newsViewModel.description, "", true)
-            //make sure that at least one chi is selected
+
             if(!titleChip.isChecked && !contentChip.isChecked) {
                 descriptionChip.isChecked = true
                 newsViewModel.searchIn = newsViewModel.description
@@ -253,10 +251,10 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         searchBar.menu.findItem(R.id.filter).isVisible = isEnable
     }
 
-    private fun initializeViews() {
-        searchBar = requireView().findViewById(R.id.search_bar)
-        searchView = requireView().findViewById(R.id.search_view)
-        viewPager = requireView().findViewById(R.id.view_pager)
-        tabLayout = requireView().findViewById(R.id.tab_layout)
+    private fun initializeViews(view: View) {
+        searchBar = view.findViewById(R.id.search_bar)
+        searchView = view.findViewById(R.id.search_view)
+        viewPager = view.findViewById(R.id.view_pager)
+        tabLayout = view.findViewById(R.id.tab_layout)
     }
 }

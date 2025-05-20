@@ -5,13 +5,13 @@
       <MessageStorage>
         <option name="commitTemplate">
           <CommitTemplate>
-            <option name="body" value="Features added -&gt; Cache data for match stats, match graphs and match player's positions" />
+            <option name="body" value="" />
             <option name="changes" value="" />
             <option name="closes" value="" />
-            <option name="scope" value="Football API related source code" />
+            <option name="scope" value="" />
             <option name="skipCi" value="" />
             <option name="subject" value="" />
-            <option name="type" value="feat" />
+            <option name="type" value="fix" />
           </CommitTemplate>
         </option>
       </MessageStorage>

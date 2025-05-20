@@ -56,7 +56,6 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeFragmentViews(view)
@@ -124,6 +123,7 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
     }
 
     private fun initializeFragmentViews(view: View) {
+        _errorLayoutBinding = ErrorLayoutBinding.bind(view.findViewById(R.id.error_layout))
         fragmentProgressIndicator = view.findViewById(R.id.circularProgressIndicator)
         recyclerView = view.findViewById(R.id.recycler_view)
     }
@@ -141,10 +141,7 @@ class EverythingFragment : Fragment(R.layout.fragment_articles),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _errorLayoutBinding = ErrorLayoutBinding.inflate(inflater, container, false)
-        return _errorLayoutBinding.root
-    }
+    ): View = inflater.inflate(R.layout.fragment_articles, container, false)
 
     override fun onItemClick(item: News.Article) {
         item.url?.let {
