@@ -5,13 +5,13 @@
       <MessageStorage>
         <option name="commitTemplate">
           <CommitTemplate>
-            <option name="body" value="" />
+            <option name="body" value="**Deleted Files:**&#10;- `.idea/.gitignore`&#10;- `.idea/androidTestResultsUserPreferences.xml`&#10;- `.idea/deploymentTargetDropDown.xml`&#10;- `.idea/GitCommitMessageStorage.xml`&#10;- `.idea/kotlinc.xml`&#10;- `.idea/render.experimental.xml`&#10;- `app/release/app-release.aab`&#10;&#10;**Modified Files:**&#10;- `app/build.gradle`: Changed Room annotation processor from `kapt` to `ksp`.&#10;- `.idea/misc.xml`: Updated project JDK to version 21 and removed visualization tool project state.&#10;- `.idea/gradle.xml`: Updated Gradle JVM to `#GRADLE_LOCAL_JAVA_HOME` and removed `resolveExternalAnnotations` option.&#10;- `build.gradle`: Updated Kotlin and KSP plugin versions.&#10;- `.idea/appInsightsSettings.xml`: Updated App Insights settings, including app ID and time interval.&#10;- `.idea/deploymentTargetSelector.xml`: Cleaned up deployment target selection states.&#10;- `.idea/compiler.xml`: Updated bytecode target level to 21." />
             <option name="changes" value="" />
-            <option name="closes" value="" />
-            <option name="scope" value="" />
+            <option name="closes" value="#8" />
+            <option name="scope" value="Update build configuration files" />
             <option name="skipCi" value="" />
-            <option name="subject" value="" />
-            <option name="type" value="fix" />
+            <option name="subject" value="Delete IDE configuration files and update Gradle settings:" />
+            <option name="type" value="build" />
           </CommitTemplate>
         </option>
       </MessageStorage>
