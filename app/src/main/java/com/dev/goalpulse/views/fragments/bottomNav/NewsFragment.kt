@@ -84,7 +84,7 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         searchView.editText.setOnEditorActionListener { _, _, _ ->
             if(searchView.text.toString() == "") newsViewModel.q = newsViewModel._q
             else {
-                searchBar.text = searchView.text
+                searchBar.setText(searchView.text)
                 newsViewModel.q = searchBar.text.toString()
             }
             searchView.hide()
@@ -164,7 +164,7 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     private fun implementApplyButton() {
         val apply = fullScreenBottomSheetView.findViewById<Button>(R.id.apply)
         apply.setOnClickListener {
-            if(searchBar.text == null || searchBar.text == "") newsViewModel.q = "football"
+            if(searchBar.text == "") newsViewModel.q = "football"
             else newsViewModel.q = searchBar.text.toString()
             lifecycleScope.launch(Dispatchers.IO) { newsViewModel.getEveryThingNews() }
             bottomSheet.dismiss()
