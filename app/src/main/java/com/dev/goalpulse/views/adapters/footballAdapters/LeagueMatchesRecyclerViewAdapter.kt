@@ -82,7 +82,6 @@ class LeagueMatchesRecyclerViewAdapter(
             _itemViewBinding.root.apply {
                 setOnClickListener {
                     val matchItem = differ.currentList[layoutPosition] as Matches.MatchesItem
-                    Log.i("matchItem", "from differ ${matchItem.id}")
                     val bundle = Bundle().apply {
                         putParcelable("match", matchItem)
                     }
@@ -137,6 +136,20 @@ class LeagueMatchesRecyclerViewAdapter(
                             intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
                             _itemViewBinding.root.context.startActivity(intent)
                         }
+                    }
+                    val isPermissionGranted = onCheckedChangeListener.checkNotificationPermission(
+                        fixture = _itemViewBinding.match!!,
+                        isChecked = isChecked
+                    )
+                    if (isPermissionGranted) {
+                        onCheckedChangeListener.onCheckChange(
+                            fixture = item,
+                            isChecked = isChecked,
+                            action = if (isChecked)
+                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_SHOW)
+                            else
+                                _itemViewBinding.root.context.getString(R.string.MATCH_START_NOTIFICATION_CANCEL)
+                        )
                     }
                 }
                 else {

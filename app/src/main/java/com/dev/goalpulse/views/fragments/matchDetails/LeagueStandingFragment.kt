@@ -124,14 +124,11 @@ class LeagueStandingFragment : Fragment(R.layout.fragment_standing), ViewCrossFa
 
     private fun handleSuccess(responseState: ResponseState.Success<Standing>) {
         if(responseState.data.isNullOrEmpty()) {
-            Log.i("standingSuccess", responseState.message!!)
             showViewWithAnimation(_errorLayoutBinding!!.root)
             hideViewWithAnimation(standingsView)
         }
         else {
-            Log.i("standingSuccess", responseState.data.toString())
             val standingList = responseState.data[0].competitors
-            Log.i("standingSuccess", standingList.toString())
             standingList?.let { buildStandingItems(it) }
             showViewWithAnimation(standingsView)
             hideViewWithAnimation(_errorLayoutBinding!!.root)
