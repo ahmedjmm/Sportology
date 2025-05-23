@@ -3,7 +3,6 @@ package com.dev.goalpulse.views.fragments.matchDetails
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.dev.goalpulse.R
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.databinding.ErrorLayoutBinding
 import com.dev.goalpulse.models.football.Standing
@@ -25,7 +23,7 @@ import com.dev.goalpulse.viewModels.MatchDetailsViewModel
 import com.dev.goalpulse.views.activities.MatchDetailsActivity
 import com.dev.goalpulse.views.viewsUtilities.ViewCrossFadeAnimation
 import com.dev.goalpulse.views.viewsUtilities.imageBinding
-import hilt_aggregated_deps._com_dev_goalpulse_views_activities_AllSearchResultsActivity_GeneratedInjector
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -123,10 +121,8 @@ class LeagueStandingFragment : Fragment(R.layout.fragment_standing), ViewCrossFa
     }
 
     private fun handleSuccess(responseState: ResponseState.Success<Standing>) {
-        if(responseState.data.isNullOrEmpty()) {
-            showViewWithAnimation(_errorLayoutBinding!!.root)
-            hideViewWithAnimation(standingsView)
-        }
+        if(responseState.data.isNullOrEmpty())
+            showError(responseState.message!!)
         else {
             val standingList = responseState.data[0].competitors
             standingList?.let { buildStandingItems(it) }
