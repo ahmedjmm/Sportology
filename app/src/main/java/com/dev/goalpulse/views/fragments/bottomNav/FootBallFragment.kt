@@ -62,6 +62,7 @@ class FootBallFragment : Fragment(R.layout.fragment_football) {
         setOnClickListeners()
         viewPager.apply {
             adapter = FootBallViewPagerAdapter(childFragmentManager, lifecycle)
+            isUserInputEnabled = false
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     tabLayout.selectTab(tabLayout.getTabAt(position))
