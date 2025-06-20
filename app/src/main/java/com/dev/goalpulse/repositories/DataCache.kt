@@ -4,6 +4,7 @@ import android.util.LruCache
 import com.dev.goalpulse.models.football.MatchGraphs
 import com.dev.goalpulse.models.football.MatchPositions
 import com.dev.goalpulse.models.football.MatchStatistics
+import com.dev.goalpulse.models.football.TVChannels
 
 /**
  * Manages caching of various types of match-related data using LRU (Least Recently Used) caches.
@@ -24,6 +25,8 @@ class DataCache {
     private val statsCache = LruCache<String, CacheEntry<MatchStatistics>>(MAX_CACHE_ENTRIES)
     private val graphsCache = LruCache<String, CacheEntry<MatchGraphs>>(MAX_CACHE_ENTRIES)
     private val positionsCache = LruCache<String, CacheEntry<MatchPositions>>(MAX_CACHE_ENTRIES)
+    private val TVChannelsCache = LruCache<String, CacheEntry<TVChannels>>(MAX_CACHE_ENTRIES)
+
 
     data class CacheEntry<T>(
         val data: T,
@@ -40,9 +43,9 @@ class DataCache {
             .also { if (it == null) statsCache.remove(matchId) }
     }
 
-    fun saveStats(matchId: String, data: MatchStatistics) {
+    fun saveStats(matchId: String, data: MatchStatistics): Any =
         statsCache.put(matchId, CacheEntry(data))
-    }
+
 
     fun getGraphs(graphId: String): MatchGraphs? {
         return graphsCache.snapshot()[graphId]
@@ -51,9 +54,9 @@ class DataCache {
             .also { if (it == null) graphsCache.remove(graphId) }
     }
 
-    fun saveGraphs(graphId: String, data: MatchGraphs) {
+    fun saveGraphs(graphId: String, data: MatchGraphs): Any =
         graphsCache.put(graphId, CacheEntry(data))
-    }
+
 
     fun getMatchPlayerPositions(matchId: String): MatchPositions? {
         return positionsCache.snapshot()[matchId]
@@ -62,7 +65,16 @@ class DataCache {
             .also { if (it == null) positionsCache.remove(matchId) }
     }
 
-    fun saveMatchPlayerPositions(matchId: String, data: MatchPositions) {
+    fun saveMatchPlayerPositions(matchId: String, data: MatchPositions): Any =
         positionsCache.put(matchId, CacheEntry(data))
+
+    fun saveMatchTVChannels(matchId: String, data: TVChannels): Any =
+        TVChannelsCache.put(matchId, CacheEntry(data))
+
+    fun getMatchTVChannels(string: String): TVChannels? {
+        return TVChannelsCache.snapshot()[string]
+            ?.takeUnless { it.isExpired }
+            ?.data
+            .also { if (it == null) TVChannelsCache.remove(string) }
     }
 }
