@@ -202,7 +202,8 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
 
     private fun showErrorUI(errorMessage: String) {
         _errorLayoutBinding!!.apply {
-            errorText.text = errorMessage
+            if(errorMessage == "500") errorText.text = context?.getString(R.string.internal_server_error)
+            else errorText.text = errorMessage
             retryButton.setOnClickListener {
                 if(Shared.isConnected)
                     lifecycleScope.launch(Dispatchers.IO) {

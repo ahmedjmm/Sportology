@@ -46,6 +46,7 @@
     <string name="no_results">No results</string>
     <string name="unknown_error">Unknown error accured</string>
     <string name="limit_reached">You have reached the request limit for the day, Go to https://dashboard.api-football.com to upgrade your plan.</string>
+    <string name="internal_server_error">Internal server error</string>">
 
     <string name="live_matches" translatable="false">all</string>
     <string name="retry">Retry</string>
