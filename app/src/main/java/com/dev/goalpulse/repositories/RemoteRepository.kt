@@ -7,7 +7,9 @@ import com.dev.goalpulse.api.NewsApi
 import com.dev.goalpulse.models.football.MatchGraphs
 import com.dev.goalpulse.models.football.MatchPositions
 import com.dev.goalpulse.models.football.MatchStatistics
+import com.dev.goalpulse.models.football.TVChannels
 import javax.inject.Inject
+import kotlin.collections.isNullOrEmpty
 
 class RemoteRepository @Inject constructor(
     private val footballApi: FootballApi?,
@@ -90,12 +92,26 @@ class RemoteRepository @Inject constructor(
     suspend fun getMatchPlayersPositions(matchId: String):ResponseState<MatchPositions> {
         cache.getMatchPlayerPositions(matchId)?.let {
             return ResponseState.Success(it)
-        }?: run {
+        } ?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchPlayersPositions(matchId = matchId)!!
             }
             if(!responseState.data.isNullOrEmpty()) {
                 cache.saveMatchPlayerPositions(matchId, responseState.data)
+            }
+            return responseState
+        }
+    }
+
+    suspend fun getMatchTVChannels(matchId: String, alpha: String): ResponseState<TVChannels> {
+        cache.getMatchTVChannels(matchId)?.let {
+            return ResponseState.Success(it)
+        } ?: run {
+            val responseState = ApiResponseHandler.handleResponse {
+                footballApi?.getMatchTVChannels(matchId = matchId, alpha = alpha)!!
+            }
+            if(!responseState.data.isNullOrEmpty()) {
+                cache.saveMatchTVChannels(matchId, responseState.data)
             }
             return responseState
         }

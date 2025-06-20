@@ -71,4 +71,12 @@ interface FootballApi {
         @Query("match_id")
         matchId: String
     ): Response<MatchPositions>
+
+    @GET("/matches-tv-channels")
+    suspend fun getMatchTVChannels(
+        @Query("match_id")
+        matchId: String,
+        @Query("alpha")
+        alpha: String
+    ): Response<TVChannels>
 }
