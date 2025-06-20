@@ -74,4 +74,5 @@
     <string name="share">مشاركة</string>
     <string name="Expand_more">توسيع</string>
     <string name="match_pressure_timeline">الجدول الزمني للضغط</string>
+    <string name="internal_server_error">خطأ في الخادم الداخلي</string>
 </resources>

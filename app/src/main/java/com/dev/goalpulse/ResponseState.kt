@@ -21,9 +21,9 @@ object ApiResponseHandler {
         return try {
             val response = call()
             Log.i("originalResponse", response.body().toString())
-            if (response.isSuccessful) {
-                ResponseState.Success(response.body())
-            } else {
+            if (response.isSuccessful) ResponseState.Success(response.body())
+            else if(response.code() == 500) ResponseState.Error(response.code().toString())
+            else {
                 // Get the raw error response as string first
                 val errorBodyString = response.errorBody()?.string() ?: ""
                 Log.d("API_ERROR", "Raw error response: $errorBodyString")
