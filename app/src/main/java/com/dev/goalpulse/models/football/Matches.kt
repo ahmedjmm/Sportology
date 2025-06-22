@@ -41,7 +41,7 @@ class Matches : ArrayList<Matches.MatchesItem>(){
         @SerializedName("referee_id")
         val refereeId: Int?,
         @SerializedName("referee_name")
-        val refereeName: String?,
+        var refereeName: String?,
         @SerializedName("referee_hash_image")
         val refereeHashImage: String?,
         @SerializedName("home_team_id")

@@ -65,6 +65,10 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         _binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
 
         this.match = args!!.match
+        if(match.refereeName == null) {
+            match.refereeName = resources.getString(R.string.data_not_provided)
+        }
+
         _binding.matchDetails = this.match
         getMatchStatistics()
         getMatchTVChannels()
