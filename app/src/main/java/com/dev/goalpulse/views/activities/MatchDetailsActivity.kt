@@ -18,15 +18,15 @@ import androidx.navigation.navArgs
 import com.dev.goalpulse.R
 import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.databinding.ActivityMatchDetailsBinding
-import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
-import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
-import com.google.android.material.snackbar.Snackbar
 import com.dev.goalpulse.models.football.Matches
 import com.dev.goalpulse.repositories.RemoteRepository
 import com.dev.goalpulse.servicesAndUtilities.NetworkConnectivityReceiver
 import com.dev.goalpulse.viewModels.MatchDetailsViewModel
 import com.dev.goalpulse.viewModels.MyViewModelProvider
+import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
+import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
 import com.dev.goalpulse.views.fragments.matchDetails.MatchStatisticsFragmentDirections
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -251,7 +251,7 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
     }
 
     fun getMatchTVChannels() {
-        val current = getResources().configuration.getLocales().get(0)
+        val current = getResources().configuration.locales.get(0)
         Log.i("TAG", "getMatchCoverage: " + current.country)
 
         args?.let {
