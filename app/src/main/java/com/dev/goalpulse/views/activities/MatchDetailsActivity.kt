@@ -16,15 +16,15 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navArgs
 import com.dev.goalpulse.R
 import com.dev.goalpulse.databinding.ActivityMatchDetailsBinding
-import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
-import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
-import com.google.android.material.snackbar.Snackbar
 import com.dev.goalpulse.models.football.Matches
 import com.dev.goalpulse.repositories.RemoteRepository
 import com.dev.goalpulse.servicesAndUtilities.NetworkConnectivityReceiver
 import com.dev.goalpulse.viewModels.MatchDetailsViewModel
 import com.dev.goalpulse.viewModels.MyViewModelProvider
+import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
+import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
 import com.dev.goalpulse.views.fragments.matchDetails.MatchStatisticsFragmentDirections
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,6 +63,10 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         _binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
 
         this.match = args!!.match
+        if(match.refereeName == null) {
+            match.refereeName = resources.getString(R.string.data_not_provided)
+        }
+
         _binding.matchDetails = this.match
         getMatchStatistics()
         this.match.graphsId?.let {
