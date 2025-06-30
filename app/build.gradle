@@ -20,8 +20,8 @@ android {
         applicationId "com.dev.goalpulse"
         minSdk 27
         targetSdk 34
-        versionCode 7
-        versionName "1.0.1"        //major changes.features(added/removed).bug fixes
+        versionCode 6
+        versionName "1.0.1"
 
         testInstrumentationRunner "com.dev.goalpulse.HiltTestRunner"
 
