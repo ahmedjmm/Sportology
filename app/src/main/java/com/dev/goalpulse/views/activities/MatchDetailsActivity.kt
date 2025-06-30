@@ -128,7 +128,11 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
                 is ResponseState.Success -> {
                     if(!responseState.data.isNullOrEmpty()) {
                         Log.i("tvChannels", "onCreate: ${responseState.data[0].tvChannels?.get(0)?.name}")
-                        _binding.tvChannels.text = responseState.data[0].tvChannels?.get(0)?.name
+                        responseState.data[0].tvChannels?.get(0)?.name?.let {
+                            _binding.tvChannels.text = it
+                        } ?: run {
+                            _binding.tvChannels.text = resources.getString(R.string.data_not_provided)
+                        }
                     }
                     else
                         _binding.tvChannels.text = resources.getString(R.string.data_not_provided)
