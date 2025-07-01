@@ -17,6 +17,7 @@ import com.dev.goalpulse.models.football.MatchGraphs
 import com.dev.goalpulse.models.football.MatchPositions
 import com.dev.goalpulse.models.football.MatchStatistics
 import com.dev.goalpulse.models.football.Standing
+import com.dev.goalpulse.models.football.TVChannels
 import com.dev.goalpulse.repositories.RemoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -112,6 +113,9 @@ class MatchDetailsViewModel @Inject constructor(
     private val _playerPositionsMutableLiveData = MutableLiveData<ResponseState<MatchPositions>>()
     val playerPositionsLiveData: LiveData<ResponseState<MatchPositions>> = _playerPositionsMutableLiveData
 
+    private val _TVChannelsMutableLiveData = MutableLiveData<ResponseState<TVChannels>>()
+    val TVChannelsLiveData: LiveData<ResponseState<TVChannels>> = _TVChannelsMutableLiveData
+
     fun getMatchPlayerPositions(matchId: String = "eq.2470375") {
         _playerPositionsMutableLiveData.postValue(ResponseState.Loading())
         if(Shared.isConnected) {
@@ -199,8 +203,6 @@ class MatchDetailsViewModel @Inject constructor(
         _standingsMutableLiveData.postValue(ResponseState.Error(message))
     }
 
-    fun convertArgumentFromIntToString(argument: Int): String = "eq.$argument"
-
     fun getMatchGraphs(graphId: String) = viewModelScope.launch(Dispatchers.IO) {
         _matchGraphsMutableLiveData.postValue(ResponseState.Loading())
             try {
@@ -211,5 +213,15 @@ class MatchDetailsViewModel @Inject constructor(
 
             }
         }
+
+    fun getMatchTVChannels(matchId: String, alpha: String) = viewModelScope.launch (Dispatchers.IO) {
+        _TVChannelsMutableLiveData.postValue(ResponseState.Loading())
+        try {
+            val response = remoteRepository.getMatchTVChannels(matchId, alpha)
+            _TVChannelsMutableLiveData.postValue(response)
+        } catch (_: Exception) {}
+    }
+
+    fun convertArgumentFromIntToString(argument: Int): String = "eq.$argument"
 
 }

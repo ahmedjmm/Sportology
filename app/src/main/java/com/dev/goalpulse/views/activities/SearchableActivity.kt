@@ -72,7 +72,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
     private lateinit var teamsLayout: RelativeLayout
     private lateinit var leaguesTitle: TextView
     private lateinit var teamsTitle: TextView
-    private lateinit var errorLayoutBinding: ErrorLayoutBinding
+    private var _errorLayoutBinding: ErrorLayoutBinding? = null
 
     private val viewModel by lazy {
         ViewModelProvider(
@@ -125,12 +125,12 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     showView(leaguesLayout)
                     leaguesError.apply {
                         showView(this)
-                        errorLayoutBinding.retryButton.setOnClickListener {
+                        _errorLayoutBinding?.retryButton?.setOnClickListener {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 viewModel.searchLeague(myQuery)
                             }
                         }
-                        errorLayoutBinding.errorText.text = responseState.message
+                        _errorLayoutBinding?.errorText?.text = responseState.message
                     }
                 }
             }
@@ -155,12 +155,12 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
                     showView(teamsLayout)
                     teamsError.apply {
                         showView(this)
-                        errorLayoutBinding.retryButton.setOnClickListener {
+                        _errorLayoutBinding?.retryButton?.setOnClickListener {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 viewModel.searchTeam(myQuery)
                             }
                         }
-                        errorLayoutBinding.errorText.text = responseState.message
+                        _errorLayoutBinding?.errorText?.text = responseState.message
                     }
                 }
             }
@@ -187,12 +187,18 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
         unregisterReceiver(networkConnectivityReceiver)
     }
 
+    override fun onDestroy() {
+        _errorLayoutBinding = null
+        super.onDestroy()
+    }
+
     override fun onNetworkStateChanged(isConnected: Boolean) {
         if(!isConnected) snackBar.show()
         else snackBar.dismiss()
     }
 
     private fun initializeViews() {
+        _errorLayoutBinding = ErrorLayoutBinding.inflate(layoutInflater)
         constraintLayout = findViewById(R.id.constraint_layout)
         snackBar = Snackbar.make(
             constraintLayout,
@@ -671,7 +677,7 @@ class SearchableActivity : AppCompatActivity(), NetworkConnectivityReceiver.Netw
         return (this * scale + 0.5f).toInt()
     }
 
-    private suspend fun doMySearch(query: String) {
+    private fun doMySearch(query: String) {
         viewModel.searchLeague(query)
         viewModel.searchTeam(query)
     }

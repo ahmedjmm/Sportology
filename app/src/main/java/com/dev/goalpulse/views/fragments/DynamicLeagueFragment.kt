@@ -48,7 +48,8 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
     private lateinit var circularProgressIndicator: CircularProgressIndicator
     private lateinit var leagueMatchesRecyclerViewAdapter: LeagueMatchesRecyclerViewAdapter
 
-    var leagueOrder = 0 //league order in the tab view
+    //represents the tab index starting from 0 until the last item index in Shared.LEAGUES_IDS
+    var leagueOrder = 0
     private var offset = 0
     private var season = ""
     private var lastResponseMessage: String? = null
@@ -202,7 +203,8 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
 
     private fun showErrorUI(errorMessage: String) {
         _errorLayoutBinding!!.apply {
-            errorText.text = errorMessage
+            if(errorMessage == "500") errorText.text = context?.getString(R.string.internal_server_error)
+            else errorText.text = errorMessage
             retryButton.setOnClickListener {
                 if(Shared.isConnected)
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -247,11 +249,11 @@ class DynamicLeagueFragment: Fragment(R.layout.fragment_dynamic_league),
                         }
                         else {
                             lifecycleScope.launch (Dispatchers.IO){
-                                this@DynamicLeagueFragment.offset += 50
+                                offset += 50
                                 footBallViewModel.getLeagueMatches(
                                     leagueId = Shared.LEAGUES_IDS[leagueOrder],
-                                    seasonId = this@DynamicLeagueFragment.season,  //seasonId = "eq.45769",
-                                    offset = this@DynamicLeagueFragment.offset.toString()
+                                    seasonId = season,  //seasonId = "eq.45769",
+                                    offset = offset.toString()
                                 )
                             }
                         }

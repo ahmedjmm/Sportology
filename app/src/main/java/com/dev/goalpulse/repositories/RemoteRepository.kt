@@ -92,6 +92,7 @@ class RemoteRepository @Inject constructor(
     suspend fun getMatchPlayersPositions(matchId: String):ResponseState<MatchPositions> {
         return cache.getMatchPlayerPositions(matchId)?.let {
             ResponseState.Success(it)
+
         } ?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchPlayersPositions(matchId = matchId)!!

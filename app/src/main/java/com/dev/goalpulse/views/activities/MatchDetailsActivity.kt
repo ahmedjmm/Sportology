@@ -3,6 +3,7 @@ package com.dev.goalpulse.views.activities
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -15,16 +16,17 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navArgs
 import com.dev.goalpulse.R
+import com.dev.goalpulse.ResponseState
 import com.dev.goalpulse.databinding.ActivityMatchDetailsBinding
-import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
-import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
-import com.google.android.material.snackbar.Snackbar
 import com.dev.goalpulse.models.football.Matches
 import com.dev.goalpulse.repositories.RemoteRepository
 import com.dev.goalpulse.servicesAndUtilities.NetworkConnectivityReceiver
 import com.dev.goalpulse.viewModels.MatchDetailsViewModel
 import com.dev.goalpulse.viewModels.MyViewModelProvider
+import com.dev.goalpulse.views.fragments.matchDetails.LeagueStandingFragmentDirections
+import com.dev.goalpulse.views.fragments.matchDetails.MatchLineupsFragmentDirections
 import com.dev.goalpulse.views.fragments.matchDetails.MatchStatisticsFragmentDirections
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,8 +65,13 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
         _binding = DataBindingUtil.setContentView(this, R.layout.activity_match_details)
 
         this.match = args!!.match
+        if(match.refereeName == null) {
+            match.refereeName = resources.getString(R.string.data_not_provided)
+        }
+
         _binding.matchDetails = this.match
         getMatchStatistics()
+        getMatchTVChannels()
         this.match.graphsId?.let {
             getMatchGraphs()
         }
@@ -116,27 +123,23 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
             }
         }
 
-//        viewModel.matchStatisticsLiveData.observe(this) { responseState ->
-//            when(responseState) {
-//                is ResponseState.Success -> {
-//                    _binding.matchDetails = responseState.data
-//                    _binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
-//                            date -> DateTimeUtils.formatDateTime(date)
-//                    }
-//                    _binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
-//                    _binding.score.text = responseState.data?.response?.get(0)?.goals?.home.toString() + " - " +
-//                            responseState.data?.response?.get(0)?.goals?.away.toString()
-//                }
-//                is ResponseState.Error -> {
-//                    _binding.matchDetails = responseState.data
-//                    _binding.dateTime.text = responseState.data?.response?.get(0)?.fixture?.date?.let {
-//                            date -> DateTimeUtils.formatDateTime(date)
-//                    }
-//                    _binding.status.text = responseState.data?.response?.get(0)?.fixture?.status?.long
-//                }
-//                is ResponseState.Loading -> {}
-//            }
-//        }
+        viewModel.TVChannelsLiveData.observe(this) { responseState ->
+            when(responseState) {
+                is ResponseState.Success -> {
+                    if(!responseState.data.isNullOrEmpty()) {
+                        Log.i("tvChannels", "onCreate: ${responseState.data[0].tvChannels?.get(0)?.name}")
+                        responseState.data[0].tvChannels?.get(0)?.name?.let {
+                            _binding.tvChannels.text = it
+                        } ?: run {
+                            _binding.tvChannels.text = resources.getString(R.string.data_not_provided)
+                        }
+                    }
+                    else
+                        _binding.tvChannels.text = resources.getString(R.string.data_not_provided)
+                }
+                else -> {}
+            }
+        }
     }
 
     private fun startFragment(action: NavDirections) {
@@ -245,14 +248,25 @@ class MatchDetailsActivity : AppCompatActivity(), NetworkConnectivityReceiver.Ne
             val stringGraphId = viewModel.convertArgumentFromIntToString(graphId)
             viewModel.getMatchGraphs(graphId = stringGraphId)
         }
-
     }
 
     fun getMatchPositions() {
         args?.let {
-            val matchPositionsId = it.match.id!!
-            val stringMatchId = viewModel.convertArgumentFromIntToString(matchPositionsId)
+            val matchId = it.match.id!!
+            val stringMatchId = viewModel.convertArgumentFromIntToString(matchId)
             viewModel.getMatchPlayerPositions(matchId = stringMatchId)
+        }
+    }
+
+    fun getMatchTVChannels() {
+        val current = getResources().configuration.locales.get(0)
+        Log.i("TAG", "getMatchCoverage: " + current.country)
+
+        args?.let {
+            val matchId = it.match.id!!
+            val stringMatchId = viewModel.convertArgumentFromIntToString(matchId)
+            val alpha = if(it.match.leagueId == 27) "eq.EG" else "eq.${current.country}"
+            viewModel.getMatchTVChannels(matchId = stringMatchId, alpha)
         }
     }
 }
