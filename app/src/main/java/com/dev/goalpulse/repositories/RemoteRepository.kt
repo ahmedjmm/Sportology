@@ -38,8 +38,8 @@ class RemoteRepository @Inject constructor(
     }
 
     suspend fun getMatchGraphs(graphId: String): ResponseState<MatchGraphs> {
-        cache.getGraphs(graphId)?.let {
-            return ResponseState.Success(it)
+        return cache.getGraphs(graphId)?.let {
+            ResponseState.Success(it)
         }?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchGraphs(graphId)!!
@@ -47,13 +47,13 @@ class RemoteRepository @Inject constructor(
             if(!responseState.data.isNullOrEmpty()) {
                 cache.saveGraphs(graphId, responseState.data)
             }
-            return responseState
+            responseState
         }
     }
 
     suspend fun getMatchStatistics(matchId: String): ResponseState<MatchStatistics> {
-        cache.getStats(matchId)?.let {
-            return ResponseState.Success(it)
+        return cache.getStats(matchId)?.let {
+            ResponseState.Success(it)
         }?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchStatistics(matchId = matchId)!!
@@ -61,7 +61,7 @@ class RemoteRepository @Inject constructor(
             if(!responseState.data.isNullOrEmpty()) {
                 cache.saveStats(matchId, responseState.data)
             }
-            return responseState
+            responseState
         }
     }
 
@@ -90,8 +90,9 @@ class RemoteRepository @Inject constructor(
     ) = newsApi?.getTopHeadLinesNews(language = language)
 
     suspend fun getMatchPlayersPositions(matchId: String):ResponseState<MatchPositions> {
-        cache.getMatchPlayerPositions(matchId)?.let {
-            return ResponseState.Success(it)
+        return cache.getMatchPlayerPositions(matchId)?.let {
+            ResponseState.Success(it)
+
         } ?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchPlayersPositions(matchId = matchId)!!
@@ -99,13 +100,13 @@ class RemoteRepository @Inject constructor(
             if(!responseState.data.isNullOrEmpty()) {
                 cache.saveMatchPlayerPositions(matchId, responseState.data)
             }
-            return responseState
+            responseState
         }
     }
 
     suspend fun getMatchTVChannels(matchId: String, alpha: String): ResponseState<TVChannels> {
-        cache.getMatchTVChannels(matchId)?.let {
-            return ResponseState.Success(it)
+        return cache.getMatchTVChannels(matchId)?.let {
+            ResponseState.Success(it)
         } ?: run {
             val responseState = ApiResponseHandler.handleResponse {
                 footballApi?.getMatchTVChannels(matchId = matchId, alpha = alpha)!!
@@ -113,7 +114,7 @@ class RemoteRepository @Inject constructor(
             if(!responseState.data.isNullOrEmpty()) {
                 cache.saveMatchTVChannels(matchId, responseState.data)
             }
-            return responseState
+            responseState
         }
     }
 }
